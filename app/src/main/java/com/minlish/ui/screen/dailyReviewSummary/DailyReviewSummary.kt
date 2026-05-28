@@ -2,7 +2,9 @@ package com.minlish.ui.screen.dailyReviewSummary
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.overscroll
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +26,8 @@ val colorGradientStart = Color(0xFF4F378A)
 val colorGradientEnd = Color(0xFFF97316)
 val primaryGradient = Brush.linearGradient(listOf(colorGradientStart, colorGradientEnd))
 
+val words: Int = 42
+val accuracy: Int = 94
 @Composable
 fun DailyReviewSummary() {
     Column(
@@ -34,10 +38,13 @@ fun DailyReviewSummary() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         CelebrationHeader()
+        Spacer(modifier = Modifier.height(30.dp))
+        StatsBentoGrid(words, accuracy)
     }
 }
 @Preview
 @Composable
 fun ReviewCardPreview(){
     DailyReviewSummary()
+
 }

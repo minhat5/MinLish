@@ -84,9 +84,3 @@ fun CelebrationHeader() {
         )
     }
 }
-
-@Preview
-@Composable
-fun ReviewPreview() {
-    CelebrationHeader()
-}
