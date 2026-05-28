@@ -73,9 +73,3 @@ fun PrimaryButton(){
         }
     }
 }
-
-@Preview
-@Composable
-fun rv(){
-    PrimaryButton()
-}
