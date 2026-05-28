@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.overscroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,23 +29,26 @@ val primaryGradient = Brush.linearGradient(listOf(colorGradientStart, colorGradi
 
 val words: Int = 42
 val accuracy: Int = 94
+
+val level: Int = 5
+val rank: String = "Master"
 @Composable
 fun DailyReviewSummary() {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(colorSurface)
+            .safeDrawingPadding()
             .padding(horizontal = 20.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.height(30.dp))
         CelebrationHeader()
         Spacer(modifier = Modifier.height(30.dp))
         StatsBentoGrid(words, accuracy)
+        Spacer(modifier = Modifier.height(30.dp))
+        ProgressCard(level, rank)
+        Spacer(modifier = Modifier.height(30.dp))
+        PrimaryButton()
     }
-}
-@Preview
-@Composable
-fun ReviewCardPreview(){
-    DailyReviewSummary()
-
 }
