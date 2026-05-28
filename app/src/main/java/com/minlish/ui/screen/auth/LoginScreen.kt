@@ -1,36 +1,31 @@
 package com.minlish.ui.screen.auth
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.minlish.R
 import com.minlish.ui.common.component.AuthHeader
+import com.minlish.ui.common.component.ButtonAuth
 import com.minlish.ui.common.component.TextFieldAuth
 import com.minlish.ui.common.component.TextFieldAuthPassword
 import com.minlish.ui.theme.MinLishTheme
@@ -82,45 +77,42 @@ fun LoginTextField() {
             contentDescription = "Password",
             isVisible = passwordVisible
         )
-        Text(
-            text = "Forgot password?",
-            color = Color(0xFF22005D),
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(bottom = 10.dp)
-        )
-        Button(
+        TextButton(
             onClick = {},
-            modifier = Modifier
-                .height(50.dp)
-                .padding(bottom = 10.dp)
-                .clip(RoundedCornerShape(50.dp))
-                .fillMaxWidth(0.8f)
+            modifier = Modifier.align(Alignment.End)
         ) {
             Text(
-                text = "Login",
-                fontSize = 18.sp,
+                text = "Forgot password?",
+                color = Color(0xFF22005D),
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(bottom = 10.dp)
             )
         }
+        ButtonAuth({}, "Login")
     }
 }
 
 @Composable
 fun CreateAccount() {
-    Row {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(
             text = "New to MinLish?",
-            modifier = Modifier.padding(end = 5.dp)
+            modifier = Modifier.padding(top = 1.dp)
         )
-        Text(
-            text = "Create Account",
-            color = Color(0xFF22005D),
-            fontWeight = FontWeight.Bold
-        )
+        TextButton(
+            onClick = {},
+        ) {
+            Text(
+                text = "Create Account",
+                color = Color(0xFF22005D),
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+        }
     }
 }
 
