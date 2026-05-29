@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.minlish.ui.common.component.PrimaryButton
 import com.minlish.ui.common.component.ProgressCard
 
 val colorPrimary = Color(0xFF4F378A)
