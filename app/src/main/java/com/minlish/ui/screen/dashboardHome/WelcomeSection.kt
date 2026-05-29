@@ -13,9 +13,7 @@ import com.minlish.ui.theme.*
 fun WelcomeSection(
     userName: String
 ){
-    Column(
-
-    ) {
+    Column{
         Text(
             text = "Welcome back, $userName",
             fontSize = 28.sp,
