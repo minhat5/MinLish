@@ -24,11 +24,11 @@ val colorGradientStart = Color(0xFF4F378A)
 val colorGradientEnd = Color(0xFFF97316)
 val primaryGradient = Brush.linearGradient(listOf(colorGradientStart, colorGradientEnd))
 
-val words: Int = 42
-val accuracy: Int = 94
-
-val level: Int = 5
-val rank: String = "Master"
+val words = 42
+val accuracy = 94
+val level = 5
+val rank = "Master"
+val text = "Continue Learning"
 @Composable
 fun DailyReviewSummary() {
     Column(
@@ -46,6 +46,6 @@ fun DailyReviewSummary() {
         Spacer(modifier = Modifier.height(30.dp))
         ProgressCard(level, rank)
         Spacer(modifier = Modifier.height(30.dp))
-        PrimaryButton()
+        PrimaryButton(primaryGradient, text)
     }
 }

@@ -21,14 +21,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minlish.ui.screen.dailyReviewSummary.primaryGradient
 
 @Composable
-fun PrimaryButton(){
+fun PrimaryButton(
+    backgroundColor: Brush,
+    text: String
+){
     Button(
         onClick = {},
         modifier = Modifier
@@ -43,7 +48,7 @@ fun PrimaryButton(){
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(primaryGradient)
+                .background(backgroundColor)
                 .padding(horizontal = 16.dp),
             contentAlignment = Alignment.Center
         ){
@@ -52,7 +57,7 @@ fun PrimaryButton(){
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Continue Learning",
+                    text = text,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White
@@ -66,4 +71,15 @@ fun PrimaryButton(){
             }
         }
     }
+}
+
+@Composable
+fun PrimaryButton(
+    backgroundColor: Color,
+    text: String
+) {
+    PrimaryButton(
+        backgroundColor = SolidColor(backgroundColor),
+        text = text
+    )
 }

@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.minlish.ui.common.component.PrimaryButton
 
 val colorPrimary = Color(0xFF4F378A)
 val colorSurface = Color(0xFFFDF7FF)
@@ -23,8 +24,8 @@ val colorOnSecondaryContainer = Color(0xFF645A7D)
 val type = "Adjective"
 val word = "Ebullient"
 val transcription = "ɪˈbʌliənt"
-
 val definition = "Cheerful and full of energy; overflowing with fervor, enthusiasm, or excitement."
+val text = "Add to Favorites"
 @Composable
 fun VocabularyDetailScreen(){
     Scaffold(
@@ -41,6 +42,8 @@ fun VocabularyDetailScreen(){
         ) {
             WordHeroSection(type, word, transcription)
             DefinitionCard(definition)
+            ExamplesCard()
+            PrimaryButton(colorPrimary, text)
         }
     }
 }
