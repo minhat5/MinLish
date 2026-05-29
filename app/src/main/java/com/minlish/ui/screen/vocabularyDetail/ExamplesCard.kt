@@ -69,9 +69,3 @@ fun ExamplesCard() {
         )
     }
 }
-
-@Preview
-@Composable
-fun rv(){
-    ExamplesCard()
-}

@@ -21,10 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.minlish.ui.screen.dailyReviewSummary.colorOnSurface
-import com.minlish.ui.screen.dailyReviewSummary.colorPrimary
-import com.minlish.ui.screen.dailyReviewSummary.colorSurface
-import com.minlish.ui.screen.dailyReviewSummary.primaryGradient
+import com.minlish.ui.theme.*
+
 
 val xp = 100
 @Composable

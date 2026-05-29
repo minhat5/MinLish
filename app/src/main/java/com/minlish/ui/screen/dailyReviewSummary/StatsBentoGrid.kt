@@ -13,6 +13,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.minlish.ui.common.component.StatCard
 import com.minlish.ui.common.component.StreakCard
+import com.minlish.ui.theme.*
+
 
 val streaks: Int = 36
 @Composable

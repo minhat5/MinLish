@@ -12,17 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.minlish.ui.common.component.PrimaryButton
 import com.minlish.ui.common.component.ProgressCard
-
-val colorPrimary = Color(0xFF4F378A)
-val colorSurface = Color(0xFFFDF7FF)
-val colorOnSurface = Color(0xFF1D1B20)
-val colorOnSurfaceVariant = Color(0xFF494551)
-val colorGradientStart = Color(0xFF4F378A)
-val colorGradientEnd = Color(0xFFF97316)
-val primaryGradient = Brush.linearGradient(listOf(colorGradientStart, colorGradientEnd))
+import com.minlish.ui.theme.*
 
 val words = 42
 val accuracy = 94

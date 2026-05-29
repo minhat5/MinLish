@@ -27,7 +27,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.minlish.ui.screen.dailyReviewSummary.primaryGradient
+import com.minlish.ui.theme.*
 
 @Composable
 fun PrimaryButton(
