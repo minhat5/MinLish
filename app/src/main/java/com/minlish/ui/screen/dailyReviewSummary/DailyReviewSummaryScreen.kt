@@ -20,10 +20,10 @@ import com.minlish.ui.theme.*
 
 val words = 42
 val accuracy = 94
-val level = 5
-val rank = "Master"
+val title = "Level 4: Explorer"
+val trailingText = "120 XP to go"
 val text = "Continue Learning"
-val progress = 20
+val progress = 36
 @Composable
 fun DailyReviewSummary() {
     Column(
@@ -39,7 +39,7 @@ fun DailyReviewSummary() {
         Spacer(modifier = Modifier.height(30.dp))
         StatsBentoGrid(words, accuracy)
         Spacer(modifier = Modifier.height(30.dp))
-        ProgressCard(level, rank, progress)
+        ProgressCard(title = title, trailingText = trailingText, progress = progress/100f)
         Spacer(modifier = Modifier.height(30.dp))
         PrimaryButton(primaryGradient, text)
     }

@@ -16,9 +16,3 @@ fun BentoGridDashboard() {
 
     }
 }
-
-@Preview
-@Composable
-fun PRV() {
-    BentoGridDashboard()
-}

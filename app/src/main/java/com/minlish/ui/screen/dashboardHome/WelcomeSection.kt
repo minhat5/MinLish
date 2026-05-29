@@ -27,9 +27,3 @@ fun WelcomeSection(
         )
     }
 }
-
-@Preview
-@Composable
-fun rv(){
-    WelcomeSection("Alex")
-}

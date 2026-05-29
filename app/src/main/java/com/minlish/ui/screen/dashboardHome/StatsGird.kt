@@ -44,9 +44,3 @@ fun StatsGrid() {
         )
     }
 }
-
-@Preview
-@Composable
-fun Rv(){
-    StatsGrid()
-}

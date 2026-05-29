@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.minlish.ui.common.component.ProgressCard
 import com.minlish.ui.theme.*
 
 
@@ -20,6 +21,9 @@ val percent = 20
 val timeRemaining = 50
 val wordsLearned = 363
 val weeklyProgress = 36
+val tag = "Travel"
+val subtitle = "Common Verbs Deck"
+val progress = 36
 @Composable
 fun HomeScreen() {
     Scaffold(
@@ -35,6 +39,13 @@ fun HomeScreen() {
         ) {
             WelcomeSection(userName)
             BentoGridDashboard()
+            ProgressCard(
+                title = "Continue Learning",
+                tag = tag,
+                subtitle = "Common Verbs Deck",
+                progressText = "$progress%",
+                progress = progress/100f
+            )
             StatsGrid()
         }
     }
