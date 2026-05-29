@@ -21,7 +21,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,13 +31,14 @@ import com.minlish.ui.theme.*
 
 @Composable
 fun StreakCard(
+    backgroundColor: Brush,
     streaks: Int
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
-            .background(primaryGradient)
+            .background(backgroundColor)
             .padding(24.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -81,4 +84,15 @@ fun StreakCard(
             )
         }
     }
+}
+
+@Composable
+fun StreakCard(
+    backgroundColor: Color,
+    streaks: Int
+) {
+    StreakCard(
+        backgroundColor = SolidColor(backgroundColor),
+        streaks = streaks
+    )
 }

@@ -20,3 +20,4 @@ val primaryGradient = Brush.linearGradient(listOf(colorGradientStart, colorGradi
 val fabGradient = Brush.linearGradient(listOf(Color(0xFF4F378A), Color(0xFFFF9800)))
 val colorSecondaryContainer = Color(0xFFE1D4FD)
 val colorOnSecondaryContainer = Color(0xFF645A7D)
+val colorSurfaceVariant = Color(0xFFE6E0E9)

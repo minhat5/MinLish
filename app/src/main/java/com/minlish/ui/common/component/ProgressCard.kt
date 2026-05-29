@@ -22,13 +22,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minlish.ui.theme.*
-
-
 val xp = 100
+
 @Composable
 fun ProgressCard(
     level: Int,
-    rank: String
+    rank: String,
+    progress: Int
 ) {
     Column(
         modifier = Modifier
@@ -65,7 +65,7 @@ fun ProgressCard(
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(0.65f) //tiến trình
+                    .fillMaxWidth(progress/100f) //tiến trình
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(50))
                     .background(primaryGradient)

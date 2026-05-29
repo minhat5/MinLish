@@ -42,7 +42,7 @@ fun StatsBentoGrid(
                 label = "ACCURACY"
             )
         }
-        StreakCard(streaks)
+        StreakCard(primaryGradient, streaks)
     }
 }
 @Preview

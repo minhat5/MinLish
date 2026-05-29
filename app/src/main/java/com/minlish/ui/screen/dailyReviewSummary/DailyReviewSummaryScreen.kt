@@ -23,6 +23,7 @@ val accuracy = 94
 val level = 5
 val rank = "Master"
 val text = "Continue Learning"
+val progress = 20
 @Composable
 fun DailyReviewSummary() {
     Column(
@@ -38,8 +39,14 @@ fun DailyReviewSummary() {
         Spacer(modifier = Modifier.height(30.dp))
         StatsBentoGrid(words, accuracy)
         Spacer(modifier = Modifier.height(30.dp))
-        ProgressCard(level, rank)
+        ProgressCard(level, rank, progress)
         Spacer(modifier = Modifier.height(30.dp))
         PrimaryButton(primaryGradient, text)
     }
+}
+
+@Preview
+@Composable
+fun RV(){
+    DailyReviewSummary()
 }

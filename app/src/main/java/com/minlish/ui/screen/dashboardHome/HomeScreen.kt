@@ -16,7 +16,10 @@ import com.minlish.ui.theme.*
 
 
 val userName = "Alex"
-
+val percent = 20
+val timeRemaining = 50
+val wordsLearned = 363
+val weeklyProgress = 36
 @Composable
 fun HomeScreen() {
     Scaffold(
@@ -31,6 +34,8 @@ fun HomeScreen() {
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             WelcomeSection(userName)
+            BentoGridDashboard()
+            StatsGrid()
         }
     }
 }
