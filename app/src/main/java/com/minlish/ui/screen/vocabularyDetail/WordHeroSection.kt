@@ -26,15 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-val colorPrimary = Color(0xFF4F378A)
-val colorSurface = Color(0xFFFDF7FF)
-val colorOnSurface = Color(0xFF1D1B20)
-val colorOnSurfaceVariant = Color(0xFF494551)
-val colorSecondaryContainer = Color(0xFFE1D4FD)
-val colorOnSecondaryContainer = Color(0xFF645A7D)
-val type = "Adjective"
-val word = "Ebullient"
-val transcription = "ɪˈbʌliənt"
 @Composable
 fun WordHeroSection(
     type: String,
@@ -50,7 +41,7 @@ fun WordHeroSection(
             modifier = Modifier
                 .background(colorSecondaryContainer, RoundedCornerShape(50.dp))
                 .padding(horizontal = 16.dp, vertical = 4.dp)
-        ){
+        ) {
             Text(
                 text = type,
                 fontSize = 12.sp,
@@ -83,7 +74,7 @@ fun WordHeroSection(
                     .shadow(elevation = 2.dp, shape = CircleShape)
                     .background(colorSurface, CircleShape),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 Icon(
                     imageVector = Icons.Filled.VolumeUp,
                     contentDescription = "Play pronunciation",
@@ -93,10 +84,4 @@ fun WordHeroSection(
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun rv(){
-    WordHeroSection(type, word, transcription)
 }
