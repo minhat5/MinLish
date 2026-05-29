@@ -50,9 +50,3 @@ fun HomeScreen() {
         }
     }
 }
-
-@Preview
-@Composable
-fun RV() {
-    HomeScreen()
-}

@@ -44,9 +44,3 @@ fun DailyReviewSummary() {
         PrimaryButton(primaryGradient, text)
     }
 }
-
-@Preview
-@Composable
-fun RV(){
-    DailyReviewSummary()
-}
