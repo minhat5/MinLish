@@ -20,8 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minlish.ui.common.component.AccountSettingRow
-import com.minlish.ui.screen.dailyReviewSummary.colorOnSurface
-import com.minlish.ui.screen.dailyReviewSummary.colorSurface
+import com.minlish.ui.theme.*
 
 @Composable
 fun ProfileAccountSettings(

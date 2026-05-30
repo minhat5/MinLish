@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.minlish.ui.screen.auth.LoginScreen
 import com.minlish.ui.screen.dailyReviewSummary.DailyReviewSummary
+import com.minlish.ui.screen.dashboardHome.HomeScreen
+import com.minlish.ui.screen.profile.ProfileScreen
 import com.minlish.ui.theme.MinLishTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,6 +20,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MinLishTheme {
                 Surface {
+                    HomeScreen()
                 }
             }
         }

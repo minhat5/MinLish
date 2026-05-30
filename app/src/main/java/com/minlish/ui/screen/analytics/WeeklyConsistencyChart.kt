@@ -34,10 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.minlish.ui.screen.dailyReviewSummary.colorOnSurface
-import com.minlish.ui.screen.dailyReviewSummary.colorOnSurfaceVariant
-import com.minlish.ui.screen.dailyReviewSummary.colorPrimary
-import com.minlish.ui.screen.dailyReviewSummary.colorSurface
+import com.minlish.ui.theme.*
 
 private val chartPurple = Color(0xFF5A4599)
 private val chartYellow = Color(0xFFE7C34E)

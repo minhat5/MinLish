@@ -26,9 +26,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.minlish.ui.screen.dailyReviewSummary.colorOnSurface
-import com.minlish.ui.screen.dailyReviewSummary.colorOnSurfaceVariant
-import com.minlish.ui.screen.dailyReviewSummary.colorPrimary
+import com.minlish.ui.theme.*
 
 @Composable
 fun AccountSettingRow(
