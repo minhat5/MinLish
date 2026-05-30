@@ -10,6 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LibraryBooks
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +27,7 @@ import com.minlish.ui.screen.dailyReviewSummary.colorSurface
 
 @Composable
 fun ProfileScreen(
+    profileStats: List<ProfileStatUiModel>,
     modifier: Modifier = Modifier
 ) {
     var darkModeEnabled by remember { mutableStateOf(false) }
@@ -39,7 +45,7 @@ fun ProfileScreen(
         )
         Spacer(modifier = Modifier.height(24.dp))
 
-        ProfileStatsGrid()
+        ProfileStatsGrid(stats = profileStats)
         Spacer(modifier = Modifier.height(24.dp))
 
         ProfileAccountSettings(
@@ -52,5 +58,28 @@ fun ProfileScreen(
 @Preview(showBackground = true)
 @Composable
 private fun ProfileScreenPreview() {
-    ProfileScreen()
+    ProfileScreen(profileStats = previewProfileStats)
 }
+
+private val previewProfileStats = listOf(
+    ProfileStatUiModel(
+        icon = Icons.Filled.LibraryBooks,
+        value = "42",
+        label = "Decks Mastered"
+    ),
+    ProfileStatUiModel(
+        icon = Icons.Filled.Star,
+        value = "128",
+        label = "Perfect Scores"
+    ),
+    ProfileStatUiModel(
+        icon = Icons.Filled.Translate,
+        value = "2.5k",
+        label = "Words Learned"
+    ),
+    ProfileStatUiModel(
+        icon = Icons.Filled.Timer,
+        value = "45h",
+        label = "Study Time"
+    )
+)

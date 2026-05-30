@@ -22,7 +22,8 @@ import com.minlish.ui.screen.dailyReviewSummary.colorSurface
 
 @Composable
 fun AnalyticsScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    progressSummaryData: ProgressSummaryData = ProgressSummaryData()
 ) {
     Column(
         modifier = modifier
@@ -47,7 +48,7 @@ fun AnalyticsScreen(
         )
 
         Spacer(modifier = Modifier.height(24.dp))
-        ProgressSummary()
+        ProgressSummary(data = progressSummaryData)
 
         Spacer(modifier = Modifier.height(24.dp))
         WeeklyConsistencyChart()
