@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.minlish.ui.theme.* // Đảm bảo import đúng theme của bạn
+import com.minlish.ui.theme.*
 
 @Composable
 fun ProgressCard(
