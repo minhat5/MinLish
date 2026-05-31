@@ -52,9 +52,16 @@ fun AppNavHost() {
     val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory())
     val setupViewModel: SetupViewModel = viewModel(factory = SetupViewModelFactory())
 
+    // Determine start destination based on login status
+    val startDestination = if (AppContainer.isLoggedInUseCase()) {
+        Routes.HOME
+    } else {
+        Routes.LOGIN
+    }
+
     NavHost(
         navController = navController,
-        startDestination = Routes.HOME
+        startDestination = startDestination
     ) {
         composable(Routes.HOME) {
             MainScaffold(
