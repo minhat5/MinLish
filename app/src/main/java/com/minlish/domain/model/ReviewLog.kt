@@ -1,5 +1,7 @@
 package com.minlish.domain.model
 
+import com.minlish.core.constant.SrsRating
+
 data class ReviewLog(
     val id: String,
     val userId: String,

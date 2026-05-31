@@ -1,4 +1,4 @@
-package com.minlish.domain.model
+package com.minlish.core.constant
 
 enum class CefrLevel {
     A1,
