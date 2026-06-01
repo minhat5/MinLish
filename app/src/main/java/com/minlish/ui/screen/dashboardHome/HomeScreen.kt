@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -53,32 +55,33 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                     color = Color.Red
                 )
             }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 20.dp, vertical = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
-            ) {
-                WelcomeSection(uiState.currentUser?.displayName ?: "User")
-                BentoGridDashboard(
-                    percent = uiState.dailyGoalPercent,
-                    timeRemaining = uiState.timeRemaining,
-                    streakDays = uiState.streakDays
-                )
-                ProgressCard(
-                    title = "Continue Learning",
-                    tag = uiState.currentDeckTag,
-                    subtitle = uiState.currentDeckSubtitle,
-                    progressText = "${uiState.deckProgress}%",
-                    progress = uiState.deckProgress / 100f
-                )
-                StatsGrid(
-                    wordsLearned = uiState.wordsLearned,
-                    weeklyProgress = uiState.weeklyProgress
-                )
-            }
-        }
+         } else {
+             Column(
+                 modifier = Modifier
+                     .fillMaxSize()
+                     .verticalScroll(rememberScrollState())
+                     .padding(paddingValues)
+                     .padding(horizontal = 20.dp, vertical = 24.dp),
+                 verticalArrangement = Arrangement.spacedBy(24.dp)
+             ) {
+                 WelcomeSection(uiState.currentUser?.displayName ?: "User")
+                 BentoGridDashboard(
+                     percent = uiState.dailyGoalPercent,
+                     timeRemaining = uiState.timeRemaining,
+                     streakDays = uiState.streakDays
+                 )
+                 ProgressCard(
+                     title = "Continue Learning",
+                     tag = uiState.currentDeckTag,
+                     subtitle = uiState.currentDeckSubtitle,
+                     progressText = "${uiState.deckProgress}%",
+                     progress = uiState.deckProgress / 100f
+                 )
+                 StatsGrid(
+                     wordsLearned = uiState.wordsLearned,
+                     weeklyProgress = uiState.weeklyProgress
+                 )
+             }
+         }
     }
 }
