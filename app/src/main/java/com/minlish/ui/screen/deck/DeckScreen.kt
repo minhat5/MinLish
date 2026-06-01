@@ -4,9 +4,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BusinessCenter
 import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -17,8 +21,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.minlish.ui.common.component.BottomNav
 import com.minlish.ui.screen.deck.components.DeckItem
 import com.minlish.ui.theme.MinLishTheme
+import com.minlish.ui.theme.colorPrimary
 
 data class DeckData(
     val id: Int,
@@ -35,6 +41,9 @@ data class DeckData(
 @Composable
 fun DeckScreen(
     onDeckSelect: (deckId: Int) -> Unit = {},
+    onAddDeckClick: () -> Unit = {},
+    selectedTab: String = "Decks",
+    onBottomTabClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val decks = remember {
@@ -75,33 +84,58 @@ fun DeckScreen(
         )
     }
 
-    Column(
+    Scaffold(
         modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-    ) {
-        Text(text = "Your Decks", fontSize = 28.sp, fontWeight = FontWeight.ExtraBold, color = Color(0xFF1A1A1A))
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(text = "Ready to learn something new?", fontSize = 15.sp, color = Color(0xFF757575))
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(bottom = 16.dp)
-        ) {
-            items(decks) { deck ->
-                DeckItem(
-                    title = deck.title,
-                    description = deck.description,
-                    icon = deck.icon,
-                    iconTint = deck.iconTint,
-                    iconBackgroundColor = deck.iconBgColor,
-                    learnedWords = deck.learnedWords,
-                    totalWords = deck.totalWords,
-                    status = deck.status,
-                    onDeckClick = { onDeckSelect(deck.id) }
+            .fillMaxSize(),
+        containerColor = Color(0xFFF9F9FF),
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddDeckClick,
+                containerColor = colorPrimary,
+                contentColor = Color.White
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Deck"
                 )
+            }
+        },
+        bottomBar = {
+            BottomNav(
+                selectedTab = selectedTab,
+                onTabClick = onBottomTabClick
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp)
+        ) {
+            Text(text = "Your Decks", fontSize = 28.sp, fontWeight = FontWeight.ExtraBold, color = Color(0xFF1A1A1A))
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = "Ready to learn something new?", fontSize = 15.sp, color = Color(0xFF757575))
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(bottom = 96.dp)
+            ) {
+                items(decks) { deck ->
+                    DeckItem(
+                        title = deck.title,
+                        description = deck.description,
+                        icon = deck.icon,
+                        iconTint = deck.iconTint,
+                        iconBackgroundColor = deck.iconBgColor,
+                        learnedWords = deck.learnedWords,
+                        totalWords = deck.totalWords,
+                        status = deck.status,
+                        onDeckClick = { onDeckSelect(deck.id) }
+                    )
+                }
             }
         }
     }

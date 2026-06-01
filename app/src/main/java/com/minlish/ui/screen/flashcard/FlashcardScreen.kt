@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -21,6 +24,7 @@ import com.minlish.ui.screen.flashcard.components.FlashcardProgressBar
 import com.minlish.ui.screen.flashcard.components.FlashcardItem
 import com.minlish.ui.screen.flashcard.components.FlashcardLevelSelector
 import com.minlish.ui.theme.MinLishTheme
+import com.minlish.ui.theme.colorPrimary
 
 data class Vocabulary(
     val word: String,
@@ -31,6 +35,7 @@ data class Vocabulary(
 @Composable
 fun FlashcardScreen(
     onBackToHome: () -> Unit = {},
+    onViewDetailClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val vocabList = remember {
@@ -81,6 +86,18 @@ fun FlashcardScreen(
                 meaning = currentVocab.meaning,
                 modifier = Modifier.weight(1f)
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = onViewDetailClick,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorPrimary
+                )
+            ) {
+                Text(text = "View Details")
+            }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
