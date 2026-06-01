@@ -34,7 +34,7 @@ fun FlashcardItem(word: String, meaning: String, phonetic: String = "/həˈloʊ/
     var isFlipped by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .aspectRatio(1f)
 //            .padding(16.dp)

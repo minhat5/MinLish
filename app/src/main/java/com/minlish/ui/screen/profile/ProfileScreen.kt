@@ -10,12 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LibraryBooks
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.Translate
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,13 +19,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.minlish.ui.screen.dailyReviewSummary.colorSurface
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.minlish.ui.common.viewmodel.ProfileViewModel
+import com.minlish.ui.common.viewmodel.ProfileViewModelFactory
+import com.minlish.ui.theme.*
+import kotlin.math.roundToInt
 
 @Composable
 fun ProfileScreen(
-    profileStats: List<ProfileStatUiModel>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLogout: () -> Unit = {},
+    viewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory())
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+    val user = uiState.currentUser
+    val stats = uiState.stats
     var darkModeEnabled by remember { mutableStateOf(false) }
 
     Column(
@@ -41,16 +45,27 @@ fun ProfileScreen(
             .padding(horizontal = 20.dp, vertical = 24.dp)
     ) {
         ProfileAvatarCard(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            name = user?.displayName ?: "Guest",
+            level = user?.levelEstimate?.name?.toDisplayText() ?: "Beginner",
+            xp = "${formatCount(stats.xp)} XP",
+            achievementText = "${stats.accuracyRate.roundToInt()}% Accuracy",
+            streakText = "${stats.streakDays} Day Streak"
         )
         Spacer(modifier = Modifier.height(24.dp))
 
-        ProfileStatsGrid(stats = profileStats)
+        ProfileStatsGrid(
+            decksMastered = stats.decksMastered.toString(),
+            perfectScores = stats.perfectScores.toString(),
+            wordsLearned = formatCount(stats.wordsLearned),
+            studyTime = "${stats.studyTimeHours}h"
+        )
         Spacer(modifier = Modifier.height(24.dp))
 
         ProfileAccountSettings(
             darkModeEnabled = darkModeEnabled,
-            onDarkModeChange = { darkModeEnabled = it }
+            onDarkModeChange = { darkModeEnabled = it },
+            onLogout = onLogout
         )
     }
 }
@@ -58,28 +73,28 @@ fun ProfileScreen(
 @Preview(showBackground = true)
 @Composable
 private fun ProfileScreenPreview() {
-    ProfileScreen(profileStats = previewProfileStats)
+    ProfileScreen()
 }
 
-private val previewProfileStats = listOf(
-    ProfileStatUiModel(
-        icon = Icons.Filled.LibraryBooks,
-        value = "42",
-        label = "Decks Mastered"
-    ),
-    ProfileStatUiModel(
-        icon = Icons.Filled.Star,
-        value = "128",
-        label = "Perfect Scores"
-    ),
-    ProfileStatUiModel(
-        icon = Icons.Filled.Translate,
-        value = "2.5k",
-        label = "Words Learned"
-    ),
-    ProfileStatUiModel(
-        icon = Icons.Filled.Timer,
-        value = "45h",
-        label = "Study Time"
-    )
-)
+private fun formatCount(value: Int): String {
+    return when {
+        value >= 1_000_000 -> "${trimDecimal(value / 1_000_000.0)}m"
+        value >= 1_000 -> "${trimDecimal(value / 1_000.0)}k"
+        else -> value.toString()
+    }
+}
+
+private fun trimDecimal(value: Double): String {
+    val roundedToOneDecimal = (value * 10).roundToInt() / 10.0
+    return if (roundedToOneDecimal % 1.0 == 0.0) {
+        roundedToOneDecimal.toInt().toString()
+    } else {
+        roundedToOneDecimal.toString()
+    }
+}
+
+private fun String.toDisplayText(): String {
+    return lowercase()
+        .replaceFirstChar { firstChar -> firstChar.uppercase() }
+}
+

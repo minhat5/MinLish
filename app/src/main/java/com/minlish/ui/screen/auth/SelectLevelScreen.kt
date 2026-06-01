@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +30,11 @@ import com.minlish.ui.common.component.ButtonAuth
 import com.minlish.ui.theme.MinLishTheme
 
 @Composable
-fun SelectLevelScreen() {
+fun SelectLevelScreen(
+    onLevelSelected: (String) -> Unit = {},
+    onSkip: () -> Unit = {}
+) {
+    val selectedLevel = remember { mutableStateOf<String?>(null) }
     Surface(
         color = Color(0xFFF7EEFE),
         modifier = Modifier
@@ -42,16 +48,42 @@ fun SelectLevelScreen() {
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Skip",
+                    color = Color(0xFF22005D),
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                    modifier = Modifier.clickable { onSkip() }
+                )
+            }
+            
             AuthHeader("Select Your Level", "Select your level to start learning")
-            SelectLevel()
-            ButtonAuth({}, "Continue")
+            SelectLevel(
+                onLevelSelected = { level ->
+                    selectedLevel.value = level
+                }
+            )
+            ButtonAuth(
+                onClick = {
+                    selectedLevel.value?.let { onLevelSelected(it) }
+                },
+                text = "Continue",
+                enabled = selectedLevel.value != null
+            )
         }
     }
 }
 
 @Composable
-fun SelectLevel() {
-    val selectedLevel = remember { mutableIntStateOf(0) }
+fun SelectLevel(onLevelSelected: (String) -> Unit) {
+    val selectedLevel = remember { mutableIntStateOf(-1) }
     val listLevel = listOf("Beginner", "Intermediate", "Advanced")
 
     Column(
@@ -62,7 +94,10 @@ fun SelectLevel() {
             Level(
                 name = levelName,
                 isSelected = selectedLevel.intValue == index,
-                onLevelSelected = { selectedLevel.intValue = index }
+                onLevelSelected = {
+                    selectedLevel.intValue = index
+                    onLevelSelected(levelName)
+                }
             )
         }
     }

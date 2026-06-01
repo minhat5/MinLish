@@ -6,53 +6,167 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.minlish.ui.screen.dailyReviewSummary.colorOnSurface
-import com.minlish.ui.screen.dailyReviewSummary.colorOnSurfaceVariant
-import com.minlish.ui.screen.dailyReviewSummary.colorSurface
+import com.minlish.ui.common.component.BottomNav
+import com.minlish.ui.common.component.TopBar
+import com.minlish.ui.theme.*
 
 @Composable
 fun AnalyticsScreen(
     modifier: Modifier = Modifier,
-    progressSummaryData: ProgressSummaryData = ProgressSummaryData()
+    progressSummaryData: ProgressSummaryData = ProgressSummaryData(),
+    retentionLevels: List<RetentionLevelData> = defaultRetentionLevelData(),
+    wordsReadyForReview: Int = 1547,
+    selectedBottomTab: String = "Analytics",
+    onBottomTabClick: (String) -> Unit = {},
+    onProfileClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
+    onStartReviewSession: () -> Unit = {}
 ) {
+    Scaffold(
+        modifier = modifier,
+        containerColor = colorSurface,
+        topBar = {
+            TopBar(
+                mainTitle = "MinLish",
+                subTitle = "Analytics",
+                onProfileClick = onProfileClick,
+                onSettingsClick = onSettingsClick
+            )
+        },
+        bottomBar = {
+            BottomNav(
+                selectedTab = selectedBottomTab,
+                onTabClick = onBottomTabClick
+            )
+        }
+    ) { paddingValues ->
+        AnalyticsContent(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            progressSummaryData = progressSummaryData,
+            retentionLevels = retentionLevels,
+            wordsReadyForReview = wordsReadyForReview,
+            onStartReviewSession = onStartReviewSession
+        )
+    }
+}
+
+@Composable
+private fun AnalyticsContent(
+    modifier: Modifier = Modifier,
+    progressSummaryData: ProgressSummaryData,
+    retentionLevels: List<RetentionLevelData>,
+    wordsReadyForReview: Int,
+    onStartReviewSession: () -> Unit
+) {
+    var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
+    val tabs = listOf("Progress", "Retention")
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(colorSurface)
-            .safeDrawingPadding()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 24.dp)
     ) {
-        Text(
-            text = "Your Progress",
-            color = colorOnSurface,
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = "Keep up the great work! You're learning faster than 78% of users.",
-            color = colorOnSurfaceVariant,
-            fontSize = 14.sp,
-            lineHeight = 18.sp,
-            modifier = Modifier.padding(top = 6.dp)
-        )
+        TabRow(
+            selectedTabIndex = selectedTabIndex,
+            containerColor = colorSurface,
+            contentColor = colorPrimary,
+            indicator = { tabPositions ->
+                TabRowDefaults.SecondaryIndicator(
+                    modifier = Modifier
+                        .tabIndicatorOffset(tabPositions[selectedTabIndex])
+                        .padding(horizontal = 32.dp)
+                        .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
+                    height = 4.dp,
+                    color = colorPrimary
+                )
+            },
+            divider = {}
+        ) {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedTabIndex == index,
+                    onClick = { selectedTabIndex = index },
+                    text = {
+                        Text(
+                            text = title,
+                            color = if (selectedTabIndex == index) colorPrimary else colorOnSurfaceVariant,
+                            fontSize = 16.sp,
+                            fontWeight = if (selectedTabIndex == index) {
+                                FontWeight.Bold
+                            } else {
+                                FontWeight.Normal
+                            }
+                        )
+                    }
+                )
+            }
+        }
 
-        Spacer(modifier = Modifier.height(24.dp))
-        ProgressSummary(data = progressSummaryData)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 24.dp)
+        ) {
+            when (selectedTabIndex) {
+                0 -> ProgressTabContent(progressSummaryData = progressSummaryData)
+                1 -> RetentionTabContent(
+                    levels = retentionLevels,
+                    wordsReadyForReview = wordsReadyForReview,
+                    onStartReviewSession = onStartReviewSession
+                )
+            }
 
-        Spacer(modifier = Modifier.height(24.dp))
-        WeeklyConsistencyChart()
+            Spacer(modifier = Modifier.height(48.dp))
+        }
     }
+}
+
+@Composable
+private fun ProgressTabContent(
+    progressSummaryData: ProgressSummaryData
+) {
+    Text(
+        text = "Your Progress",
+        color = colorOnSurface,
+        fontSize = 26.sp,
+        fontWeight = FontWeight.Bold
+    )
+    Text(
+        text = "Keep up the great work! You're learning faster than 78% of users.",
+        color = colorOnSurfaceVariant,
+        fontSize = 14.sp,
+        lineHeight = 18.sp,
+        modifier = Modifier.padding(top = 6.dp)
+    )
+
+    Spacer(modifier = Modifier.height(24.dp))
+    ProgressSummary(data = progressSummaryData)
+
+    Spacer(modifier = Modifier.height(24.dp))
+    WeeklyConsistencyChart()
 }
 
 @Preview(showBackground = true)

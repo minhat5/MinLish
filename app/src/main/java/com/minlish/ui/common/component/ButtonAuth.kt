@@ -15,9 +15,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun ButtonAuth(onClick: () -> Unit, text: String) {
+fun ButtonAuth(onClick: () -> Unit, text: String, enabled: Boolean = true) {
     Button(
         onClick = onClick,
+        enabled = enabled,
         modifier = Modifier
             .height(50.dp)
             .padding(bottom = 10.dp)

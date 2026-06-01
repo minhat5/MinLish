@@ -34,10 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.minlish.ui.screen.dailyReviewSummary.colorOnSurface
-import com.minlish.ui.screen.dailyReviewSummary.colorOnSurfaceVariant
-import com.minlish.ui.screen.dailyReviewSummary.colorPrimary
-import com.minlish.ui.screen.dailyReviewSummary.colorSurface
+import com.minlish.ui.theme.*
 
 private val chartPurple = Color(0xFF5A4599)
 private val chartYellow = Color(0xFFE7C34E)
@@ -178,8 +175,8 @@ private fun ConsistencyChartCanvas(
 
 private fun defaultWeeklyConsistencyEntries() = listOf(
     WeeklyConsistencyEntry("M", learningProgress = 0.42f, goalProgress = 0.55f, goalMet = false),
-    WeeklyConsistencyEntry("T", learningProgress = 0.62f, goalProgress = 0.66f, goalMet = true),
-    WeeklyConsistencyEntry("W", learningProgress = 0.82f, goalProgress = 0.88f, goalMet = true),
+    WeeklyConsistencyEntry("T", learningProgress = 0.62f, goalProgress = 0.56f, goalMet = true),
+    WeeklyConsistencyEntry("W", learningProgress = 0.82f, goalProgress = 0.78f, goalMet = true),
     WeeklyConsistencyEntry("T", learningProgress = 0.32f, goalProgress = 0.80f, goalMet = false),
     WeeklyConsistencyEntry("F", learningProgress = 0.92f, goalProgress = 0.12f, goalMet = true),
     WeeklyConsistencyEntry("S", learningProgress = 0.52f, goalProgress = 0.02f, goalMet = false),

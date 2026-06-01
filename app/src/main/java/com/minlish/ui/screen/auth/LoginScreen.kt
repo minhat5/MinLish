@@ -13,8 +13,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -28,9 +30,25 @@ import com.minlish.ui.common.component.ButtonAuth
 import com.minlish.ui.common.component.TextFieldAuth
 import com.minlish.ui.common.component.TextFieldAuthPassword
 import com.minlish.ui.theme.MinLishTheme
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.text.style.TextAlign
+import com.minlish.domain.model.UserProfile
+import com.minlish.ui.common.viewmodel.AuthViewModel
+import com.minlish.ui.common.viewmodel.AuthViewModelFactory
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    onLoginSuccess: (UserProfile) -> Unit = {},
+    onNavigateRegister: () -> Unit = {},
+    viewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory())
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState.currentUser?.id) {
+        uiState.currentUser?.let(onLoginSuccess)
+    }
+
     Surface(
         color = Color(0xFFF7EEFE),
         modifier = Modifier
@@ -45,14 +63,22 @@ fun LoginScreen() {
                 .fillMaxSize()
         ) {
             AuthHeader("Welcome Back!", "Ready to boost your English today?")
-            LoginTextField()
-            CreateAccount()
+            LoginTextField(
+                uiState = uiState,
+                onLogin = { email, password -> viewModel.login(email, password) },
+                onForgotPassword = { email -> viewModel.resetPassword(email) }
+            )
+            CreateAccount(onNavigateRegister = onNavigateRegister)
         }
     }
 }
 
 @Composable
-fun LoginTextField() {
+fun LoginTextField(
+    uiState: AuthUiState,
+    onLogin: (String, String) -> Unit,
+    onForgotPassword: (String) -> Unit
+) {
     val emailState = remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf("") }
     val passwordVisible = remember { mutableStateOf(false) }
@@ -60,7 +86,7 @@ fun LoginTextField() {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+    ) {
         TextFieldAuth(
             value = emailState.value,
             onValueChange = { emailState.value = it },
@@ -77,7 +103,13 @@ fun LoginTextField() {
             isVisible = passwordVisible
         )
         TextButton(
-            onClick = {},
+            onClick = {
+                val email = emailState.value.trim()
+                if (email.isBlank()) {
+                    return@TextButton
+                }
+                onForgotPassword(email)
+            },
             modifier = Modifier.align(Alignment.End)
         ) {
             Text(
@@ -89,12 +121,39 @@ fun LoginTextField() {
                     .padding(bottom = 10.dp)
             )
         }
-        ButtonAuth({}, "Login")
+        uiState.errorMessage?.let { message ->
+            Text(
+                text = message,
+                color = Color(0xFFB00020),
+                fontSize = 13.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(bottom = 6.dp)
+            )
+        }
+        uiState.successMessage?.let { message ->
+            Text(
+                text = message,
+                color = Color(0xFF0A7A3B),
+                fontSize = 13.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(bottom = 6.dp)
+            )
+        }
+        ButtonAuth(
+            onClick = {
+                val email = emailState.value.trim()
+                val password = passwordState.value
+                onLogin(email, password)
+            },
+            text = if (uiState.isLoading) "Logging in..." else "Login"
+        )
     }
 }
 
 @Composable
-fun CreateAccount() {
+fun CreateAccount(onNavigateRegister: () -> Unit = {}) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -103,7 +162,7 @@ fun CreateAccount() {
             modifier = Modifier.padding(top = 1.dp)
         )
         TextButton(
-            onClick = {},
+            onClick = onNavigateRegister,
         ) {
             Text(
                 text = "Create Account",

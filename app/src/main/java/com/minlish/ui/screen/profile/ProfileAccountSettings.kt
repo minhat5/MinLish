@@ -20,14 +20,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minlish.ui.common.component.AccountSettingRow
-import com.minlish.ui.screen.dailyReviewSummary.colorOnSurface
-import com.minlish.ui.screen.dailyReviewSummary.colorSurface
+import com.minlish.ui.theme.*
 
 @Composable
 fun ProfileAccountSettings(
     modifier: Modifier = Modifier,
     darkModeEnabled: Boolean = false,
-    onDarkModeChange: (Boolean) -> Unit = {}
+    onDarkModeChange: (Boolean) -> Unit = {},
+    onLogout: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -73,7 +73,8 @@ fun ProfileAccountSettings(
             title = "Log Out",
             titleColor = Color(0xFFBA1A1A),
             iconColor = Color(0xFFBA1A1A),
-            iconBackgroundColor = Color(0xFFFFDAD6)
+            iconBackgroundColor = Color(0xFFFFDAD6),
+            onClick = onLogout
         )
     }
 }

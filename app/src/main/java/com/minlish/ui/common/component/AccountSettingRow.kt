@@ -1,6 +1,7 @@
 package com.minlish.ui.common.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,9 +27,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.minlish.ui.screen.dailyReviewSummary.colorOnSurface
-import com.minlish.ui.screen.dailyReviewSummary.colorOnSurfaceVariant
-import com.minlish.ui.screen.dailyReviewSummary.colorPrimary
+import com.minlish.ui.theme.*
 
 @Composable
 fun AccountSettingRow(
@@ -41,12 +40,14 @@ fun AccountSettingRow(
     iconBackgroundColor: Color = Color(0xFFEADDFF),
     showArrow: Boolean = false,
     checked: Boolean? = null,
-    onCheckedChange: ((Boolean) -> Unit)? = null
+    onCheckedChange: ((Boolean) -> Unit)? = null,
+    onClick: (() -> Unit)? = null
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 18.dp, vertical = 16.dp),
+            .padding(horizontal = 18.dp, vertical = 16.dp)
+            .clickable(enabled = onClick != null) { onClick?.invoke() },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
