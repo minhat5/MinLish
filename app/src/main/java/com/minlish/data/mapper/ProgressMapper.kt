@@ -3,7 +3,7 @@ package com.minlish.data.mapper
 import com.minlish.data.dto.DailyActivityDto
 import com.minlish.data.dto.ProgressSnapshotDto
 import com.minlish.domain.model.DailyActivity
-import com.minlish.domain.model.LevelEstimate
+import com.minlish.core.constant.LevelEstimate
 import com.minlish.domain.model.ProgressSnapshot
 
 fun ProgressSnapshotDto.toDomain(): ProgressSnapshot {

@@ -26,7 +26,8 @@ import com.minlish.ui.theme.*
 fun ProfileAccountSettings(
     modifier: Modifier = Modifier,
     darkModeEnabled: Boolean = false,
-    onDarkModeChange: (Boolean) -> Unit = {}
+    onDarkModeChange: (Boolean) -> Unit = {},
+    onLogout: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -72,7 +73,8 @@ fun ProfileAccountSettings(
             title = "Log Out",
             titleColor = Color(0xFFBA1A1A),
             iconColor = Color(0xFFBA1A1A),
-            iconBackgroundColor = Color(0xFFFFDAD6)
+            iconBackgroundColor = Color(0xFFFFDAD6),
+            onClick = onLogout
         )
     }
 }

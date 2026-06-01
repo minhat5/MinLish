@@ -1,5 +1,9 @@
 package com.minlish.domain.model
 
+import com.minlish.core.constant.CefrLevel
+import com.minlish.core.constant.LearningGoal
+import com.minlish.core.constant.LevelEstimate
+
 data class UserProfile(
     val id: String,
     val email: String,

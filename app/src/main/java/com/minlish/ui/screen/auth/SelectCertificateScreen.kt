@@ -11,30 +11,32 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minlish.ui.common.component.AuthHeader
 import com.minlish.ui.common.component.ButtonAuth
-import com.minlish.ui.theme.MinLishTheme
 
 @Composable
-fun SelectLevelScreen(
-    onLevelSelected: (String) -> Unit = {},
-    onSkip: () -> Unit = {}
+fun SelectCefrLevelScreen(
+    onCefrLevelSelected: (String) -> Unit = {},
+    onSkip: () -> Unit = {},
+    onBack: () -> Unit = {}
 ) {
-    val selectedLevel = remember { mutableStateOf<String?>(null) }
+    val selectedLevel = remember { mutableIntStateOf(-1) }
     Surface(
         color = Color(0xFFF7EEFE),
         modifier = Modifier
@@ -52,9 +54,16 @@ fun SelectLevelScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.End,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color(0xFF22005D)
+                    )
+                }
                 Text(
                     text = "Skip",
                     color = Color(0xFF22005D),
@@ -64,39 +73,40 @@ fun SelectLevelScreen(
                 )
             }
             
-            AuthHeader("Select Your Level", "Select your level to start learning")
-            SelectLevel(
-                onLevelSelected = { level ->
-                    selectedLevel.value = level
-                }
-            )
+            AuthHeader("Select CEFR Level", "Choose your current level (Optional)")
+            SelectCefrLevel(onCefrLevelSelected = { level ->
+                selectedLevel.intValue = level
+            })
             ButtonAuth(
                 onClick = {
-                    selectedLevel.value?.let { onLevelSelected(it) }
+                    if (selectedLevel.intValue >= 0) {
+                        val levels = listOf("A1", "A2", "B1", "B2", "C1", "C2")
+                        onCefrLevelSelected(levels[selectedLevel.intValue])
+                    }
                 },
                 text = "Continue",
-                enabled = selectedLevel.value != null
+                enabled = selectedLevel.intValue >= 0
             )
         }
     }
 }
 
 @Composable
-fun SelectLevel(onLevelSelected: (String) -> Unit) {
+fun SelectCefrLevel(onCefrLevelSelected: (Int) -> Unit) {
     val selectedLevel = remember { mutableIntStateOf(-1) }
-    val listLevel = listOf("Beginner", "Intermediate", "Advanced")
+    val levels = listOf("A1", "A2", "B1", "B2", "C1", "C2")
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.fillMaxWidth(0.85f)
     ) {
-        listLevel.forEachIndexed { index, levelName ->
-            Level(
+        levels.forEachIndexed { index, levelName ->
+            CefrLevelItem(
                 name = levelName,
                 isSelected = selectedLevel.intValue == index,
                 onLevelSelected = {
                     selectedLevel.intValue = index
-                    onLevelSelected(levelName)
+                    onCefrLevelSelected(index)
                 }
             )
         }
@@ -104,7 +114,7 @@ fun SelectLevel(onLevelSelected: (String) -> Unit) {
 }
 
 @Composable
-fun Level(
+fun CefrLevelItem(
     name: String,
     isSelected: Boolean,
     onLevelSelected: () -> Unit
@@ -139,10 +149,3 @@ fun Level(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SelectLevelPreview() {
-    MinLishTheme {
-        SelectLevelScreen()
-    }
-}

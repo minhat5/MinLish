@@ -28,7 +28,8 @@ import com.minlish.ui.theme.*
 @Composable
 fun ProfileScreen(
     profileStats: List<ProfileStatUiModel>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLogout: () -> Unit = {}
 ) {
     var darkModeEnabled by remember { mutableStateOf(false) }
 
@@ -50,7 +51,8 @@ fun ProfileScreen(
 
         ProfileAccountSettings(
             darkModeEnabled = darkModeEnabled,
-            onDarkModeChange = { darkModeEnabled = it }
+            onDarkModeChange = { darkModeEnabled = it },
+            onLogout = onLogout
         )
     }
 }

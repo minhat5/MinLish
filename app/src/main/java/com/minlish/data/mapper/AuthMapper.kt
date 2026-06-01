@@ -1,12 +1,12 @@
 package com.minlish.data.mapper
 
-import com.minlish.data.dto.UserProfileDto
+import com.minlish.data.dto.AuthResponseDto
 import com.minlish.core.constant.CefrLevel
 import com.minlish.core.constant.LearningGoal
 import com.minlish.core.constant.LevelEstimate
 import com.minlish.domain.model.UserProfile
 
-fun UserProfileDto.toDomain(): UserProfile {
+fun AuthResponseDto.toDomain(): UserProfile {
     val parsedCefr = if (cefrLevel.isNullOrBlank()) null else parseEnum(cefrLevel, CefrLevel.A1)
     return UserProfile(
         id = id,
@@ -21,8 +21,8 @@ fun UserProfileDto.toDomain(): UserProfile {
     )
 }
 
-fun UserProfile.toDto(): UserProfileDto {
-    return UserProfileDto(
+fun UserProfile.toAuthResponse(): AuthResponseDto {
+    return AuthResponseDto(
         id = id,
         email = email,
         displayName = displayName,

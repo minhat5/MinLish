@@ -1,5 +1,7 @@
 package com.minlish.domain.model
 
+import com.minlish.core.constant.LevelEstimate
+
 data class ProgressSnapshot(
     val userId: String,
     val wordsLearned: Int = 0,

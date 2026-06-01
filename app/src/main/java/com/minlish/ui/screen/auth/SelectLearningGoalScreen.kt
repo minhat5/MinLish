@@ -11,6 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,19 +26,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minlish.ui.common.component.AuthHeader
 import com.minlish.ui.common.component.ButtonAuth
-import com.minlish.ui.theme.MinLishTheme
 
 @Composable
-fun SelectLevelScreen(
-    onLevelSelected: (String) -> Unit = {},
-    onSkip: () -> Unit = {}
+fun SelectLearningGoalScreen(
+    onGoalSelected: (String) -> Unit = {},
+    onSkip: () -> Unit = {},
+    onBack: () -> Unit = {}
 ) {
-    val selectedLevel = remember { mutableStateOf<String?>(null) }
+    val selectedGoal = remember { mutableStateOf<String?>(null) }
     Surface(
         color = Color(0xFFF7EEFE),
         modifier = Modifier
@@ -52,9 +55,16 @@ fun SelectLevelScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.End,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color(0xFF22005D)
+                    )
+                }
                 Text(
                     text = "Skip",
                     color = Color(0xFF22005D),
@@ -64,39 +74,37 @@ fun SelectLevelScreen(
                 )
             }
             
-            AuthHeader("Select Your Level", "Select your level to start learning")
-            SelectLevel(
-                onLevelSelected = { level ->
-                    selectedLevel.value = level
-                }
-            )
+            AuthHeader("Learning Goal", "What's your main goal? (Optional)")
+            SelectGoal(onGoalSelected = { goal ->
+                selectedGoal.value = goal
+            })
             ButtonAuth(
                 onClick = {
-                    selectedLevel.value?.let { onLevelSelected(it) }
+                    selectedGoal.value?.let { onGoalSelected(it) }
                 },
-                text = "Continue",
-                enabled = selectedLevel.value != null
+                text = "Start Learning",
+                enabled = selectedGoal.value != null
             )
         }
     }
 }
 
 @Composable
-fun SelectLevel(onLevelSelected: (String) -> Unit) {
-    val selectedLevel = remember { mutableIntStateOf(-1) }
-    val listLevel = listOf("Beginner", "Intermediate", "Advanced")
+fun SelectGoal(onGoalSelected: (String) -> Unit) {
+    val selectedGoal = remember { mutableIntStateOf(-1) }
+    val listGoals = listOf("Communication", "Career", "Exam Preparation", "Travel")
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.fillMaxWidth(0.85f)
     ) {
-        listLevel.forEachIndexed { index, levelName ->
-            Level(
-                name = levelName,
-                isSelected = selectedLevel.intValue == index,
-                onLevelSelected = {
-                    selectedLevel.intValue = index
-                    onLevelSelected(levelName)
+        listGoals.forEachIndexed { index, goalName ->
+            Goal(
+                name = goalName,
+                isSelected = selectedGoal.intValue == index,
+                onGoalSelected = {
+                    selectedGoal.intValue = index
+                    onGoalSelected(goalName)
                 }
             )
         }
@@ -104,10 +112,10 @@ fun SelectLevel(onLevelSelected: (String) -> Unit) {
 }
 
 @Composable
-fun Level(
+fun Goal(
     name: String,
     isSelected: Boolean,
-    onLevelSelected: () -> Unit
+    onGoalSelected: () -> Unit
 ) {
     val backgroundColor = if (isSelected) Color(0xFF22005D) else Color.White
     val textColor = if (isSelected) Color.White else Color(0xFF22005D)
@@ -127,7 +135,7 @@ fun Level(
                 color = borderColor,
                 shape = RoundedCornerShape(12.dp)
             )
-            .clickable { onLevelSelected() }
+            .clickable { onGoalSelected() }
             .padding(20.dp)
     ) {
         Text(
@@ -139,10 +147,3 @@ fun Level(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SelectLevelPreview() {
-    MinLishTheme {
-        SelectLevelScreen()
-    }
-}
