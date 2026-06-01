@@ -12,9 +12,7 @@ import com.minlish.domain.repository.ProfileRepository
 import com.minlish.domain.usecase.GetCurrentUserUseCase
 import com.minlish.domain.usecase.GetProfileStatsUseCase
 import com.minlish.data.repository.DashboardRepositoryImpl
-import com.minlish.domain.repository.AuthRepository
 import com.minlish.domain.repository.DashboardRepository
-import com.minlish.domain.usecase.GetCurrentUserUseCase
 import com.minlish.domain.usecase.GetDashboardMetricsUseCase
 import com.minlish.domain.usecase.IsLoggedInUseCase
 import com.minlish.domain.usecase.LoginUseCase

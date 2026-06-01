@@ -21,7 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.minlish.ui.common.component.BottomNav
 import com.minlish.ui.screen.deck.components.DeckItem
 import com.minlish.ui.theme.MinLishTheme
 import com.minlish.ui.theme.colorPrimary
@@ -42,8 +41,6 @@ data class DeckData(
 fun DeckScreen(
     onDeckSelect: (deckId: Int) -> Unit = {},
     onAddDeckClick: () -> Unit = {},
-    selectedTab: String = "Decks",
-    onBottomTabClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val decks = remember {
@@ -99,12 +96,6 @@ fun DeckScreen(
                     contentDescription = "Add Deck"
                 )
             }
-        },
-        bottomBar = {
-            BottomNav(
-                selectedTab = selectedTab,
-                onTabClick = onBottomTabClick
-            )
         }
     ) { paddingValues ->
         Column(

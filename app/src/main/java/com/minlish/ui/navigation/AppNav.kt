@@ -26,12 +26,11 @@ import com.minlish.ui.screen.auth.SelectLevelScreen
 import com.minlish.ui.screen.dashboardHome.HomeScreen
 import com.minlish.ui.screen.profile.ProfileScreen
 import com.minlish.ui.screen.vocabs.AddDeckScreen
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LibraryBooks
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Translate
-import androidx.compose.material.icons.filled.Timer
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
+import com.minlish.ui.screen.deck.DeckScreen
+import com.minlish.ui.screen.flashcard.FlashcardScreen
+import com.minlish.ui.screen.vocabularyDetail.VocabularyDetailScreen
 
 private object Routes {
     const val HOME = "home"
@@ -43,6 +42,9 @@ private object Routes {
     const val SELECT_LEVEL = "selectLevel"
     const val SELECT_CERTIFICATE = "selectCertificate"
     const val SELECT_LEARNING_GOAL = "selectLearningGoal"
+    const val FLASHCARD = "flashcard"
+    const val VOCABULARY_DETAIL = "vocabulary_detail"
+    const val ADD_DECK = "add_deck"
 }
 
 @Composable
@@ -79,8 +81,26 @@ fun AppNavHost() {
                     handleTabNavigation(route, navController, shouldGuardProfile = true)
                 }
             ) { padding ->
-                AddDeckScreen(modifier = Modifier.fillMaxSize().padding(padding))
+//                AddDeckScreen(modifier = Modifier.fillMaxSize().padding(padding))
+                DeckScreen(
+                    modifier = Modifier.fillMaxSize().padding(padding),
+                    onAddDeckClick = {
+                    navController.navigate(Routes.ADD_DECK)
+                },
+                onDeckSelect = { deckId -> navController.navigate(Routes.FLASHCARD) })
             }
+        }
+        composable(Routes.ADD_DECK) {
+            AddDeckScreen()
+        }
+        composable(Routes.FLASHCARD) {
+            FlashcardScreen(
+                onBackToHome = { navController.popBackStack(Routes.DECKS, inclusive = false) },
+                onViewDetailClick = { navController.navigate(Routes.VOCABULARY_DETAIL) }
+            )
+        }
+        composable(Routes.VOCABULARY_DETAIL) {
+            VocabularyDetailScreen("gay")
         }
         composable(Routes.ANALYTICS) {
             AnalyticsScreen(
@@ -267,4 +287,20 @@ private fun tabToRoute(tab: String): String {
     }
 }
 
+private fun NavController.navigateToBottomTab(tab: String) {
+    val route = when (tab) {
+        "Home" -> Routes.HOME
+        "Decks" -> Routes.DECKS
+        "Analytics" -> Routes.ANALYTICS
+        "Profile" -> Routes.PROFILE
+        else -> return
+    }
 
+    navigate(route) {
+        popUpTo(graph.findStartDestination().id) {
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
+    }
+}
