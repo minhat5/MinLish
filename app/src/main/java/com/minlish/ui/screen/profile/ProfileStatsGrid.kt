@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.minlish.ui.common.component.StatCard
 
-data class ProfileStatUiModel(
+private data class ProfileStatUiModel(
     val icon: ImageVector,
     val value: String,
     val label: String
@@ -25,9 +25,35 @@ data class ProfileStatUiModel(
 
 @Composable
 fun ProfileStatsGrid(
-    stats: List<ProfileStatUiModel>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    decksMastered: String = "42",
+    perfectScores: String = "128",
+    wordsLearned: String = "2.5k",
+    studyTime: String = "45h"
 ) {
+    val stats = listOf(
+        ProfileStatUiModel(
+            icon = Icons.Filled.LibraryBooks,
+            value = decksMastered,
+            label = "Decks Mastered"
+        ),
+        ProfileStatUiModel(
+            icon = Icons.Filled.Star,
+            value = perfectScores,
+            label = "Perfect Scores"
+        ),
+        ProfileStatUiModel(
+            icon = Icons.Filled.Translate,
+            value = wordsLearned,
+            label = "Words Learned"
+        ),
+        ProfileStatUiModel(
+            icon = Icons.Filled.Timer,
+            value = studyTime,
+            label = "Study Time"
+        )
+    )
+
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -56,31 +82,8 @@ fun ProfileStatsGrid(
 
 private const val PROFILE_STATS_COLUMN_COUNT = 2
 
-private val previewProfileStats = listOf(
-    ProfileStatUiModel(
-        icon = Icons.Filled.LibraryBooks,
-        value = "42",
-        label = "Decks Mastered"
-    ),
-    ProfileStatUiModel(
-        icon = Icons.Filled.Star,
-        value = "128",
-        label = "Perfect Scores"
-    ),
-    ProfileStatUiModel(
-        icon = Icons.Filled.Translate,
-        value = "2.5k",
-        label = "Words Learned"
-    ),
-    ProfileStatUiModel(
-        icon = Icons.Filled.Timer,
-        value = "45h",
-        label = "Study Time"
-    )
-)
-
 @Preview(showBackground = true)
 @Composable
 private fun ProfileStatsGridPreview() {
-    ProfileStatsGrid(stats = previewProfileStats)
+    ProfileStatsGrid()
 }

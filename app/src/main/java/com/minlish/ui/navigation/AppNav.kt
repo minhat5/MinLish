@@ -26,7 +26,6 @@ import com.minlish.ui.screen.auth.SelectLevelScreen
 import com.minlish.ui.screen.dashboardHome.HomeScreen
 import com.minlish.ui.screen.deck.DeckScreen
 import com.minlish.ui.screen.profile.ProfileScreen
-import com.minlish.ui.screen.profile.ProfileStatUiModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LibraryBooks
 import androidx.compose.material.icons.filled.Star
@@ -101,7 +100,7 @@ fun AppNavHost() {
                 }
             ) { padding ->
                 ProfileScreen(
-                    profileStats = previewProfileStats, 
+
                     modifier = Modifier.fillMaxSize().padding(padding),
                     onLogout = {
                         authViewModel.logout()
@@ -266,25 +265,4 @@ private fun tabToRoute(tab: String): String {
     }
 }
 
-private val previewProfileStats = listOf(
-    ProfileStatUiModel(
-        icon = Icons.Filled.LibraryBooks,
-        value = "42",
-        label = "Decks Mastered"
-    ),
-    ProfileStatUiModel(
-        icon = Icons.Filled.Star,
-        value = "128",
-        label = "Perfect Scores"
-    ),
-    ProfileStatUiModel(
-        icon = Icons.Filled.Translate,
-        value = "2.5k",
-        label = "Words Learned"
-    ),
-    ProfileStatUiModel(
-        icon = Icons.Filled.Timer,
-        value = "45h",
-        label = "Study Time"
-    )
-)
+
