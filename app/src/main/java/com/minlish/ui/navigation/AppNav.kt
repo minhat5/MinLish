@@ -24,8 +24,8 @@ import com.minlish.ui.screen.auth.SelectCefrLevelScreen
 import com.minlish.ui.screen.auth.SelectLearningGoalScreen
 import com.minlish.ui.screen.auth.SelectLevelScreen
 import com.minlish.ui.screen.dashboardHome.HomeScreen
-import com.minlish.ui.screen.deck.DeckScreen
 import com.minlish.ui.screen.profile.ProfileScreen
+import com.minlish.ui.screen.vocabs.AddDeckScreen
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LibraryBooks
 import androidx.compose.material.icons.filled.Star
@@ -79,7 +79,7 @@ fun AppNavHost() {
                     handleTabNavigation(route, navController, shouldGuardProfile = true)
                 }
             ) { padding ->
-                DeckScreen(modifier = Modifier.fillMaxSize().padding(padding))
+                AddDeckScreen(modifier = Modifier.fillMaxSize().padding(padding))
             }
         }
         composable(Routes.ANALYTICS) {
@@ -209,7 +209,7 @@ private fun MainScaffold(
                 mainTitle = "MinLish",
                 subTitle = when (currentRoute) {
                     Routes.HOME -> "Home"
-                    Routes.DECKS -> "Decks"
+                    Routes.DECKS -> "Add Decks"
                     Routes.ANALYTICS -> "Analytics"
                     Routes.PROFILE -> "Profile"
                     else -> null

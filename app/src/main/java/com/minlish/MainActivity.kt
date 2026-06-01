@@ -20,8 +20,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             MinLishTheme {
                 Surface {
-                    AnalyticsScreen ()
+//                    AnalyticsScreen ()
 //                    AddDeckScreen()
+                    AppNavHost()
                 }
             }
         }
