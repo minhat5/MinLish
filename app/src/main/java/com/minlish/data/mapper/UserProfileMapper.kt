@@ -1,9 +1,9 @@
 package com.minlish.data.mapper
 
 import com.minlish.data.dto.UserProfileDto
-import com.minlish.domain.model.CefrLevel
-import com.minlish.domain.model.LearningGoal
-import com.minlish.domain.model.LevelEstimate
+import com.minlish.core.constant.CefrLevel
+import com.minlish.core.constant.LearningGoal
+import com.minlish.core.constant.LevelEstimate
 import com.minlish.domain.model.UserProfile
 
 fun UserProfileDto.toDomain(): UserProfile {

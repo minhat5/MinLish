@@ -1,5 +1,7 @@
 package com.minlish.domain.model
 
+import com.minlish.core.constant.DeckStatus
+
 data class Deck(
     val id: String,
     val ownerId: String,

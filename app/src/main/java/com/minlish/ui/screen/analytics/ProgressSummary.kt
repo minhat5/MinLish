@@ -19,8 +19,8 @@ data class ProgressSummaryData(
     val masteredWordsDetail: String = "+12 this\nweek",
     val learningSpeed: String = "2.4",
     val learningSpeedDetail: String = "w/min",
-    val retentionRate: String = "2%",
-    val retentionProgress: Float = 0.2f
+    val retentionRate: String = "82%",
+    val retentionProgress: Float = 0.82f
 )
 
 @Composable

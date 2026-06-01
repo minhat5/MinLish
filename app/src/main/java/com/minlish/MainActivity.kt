@@ -10,31 +10,24 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.minlish.ui.theme.MinLishTheme
+import com.minlish.di.AppContainer
+import com.minlish.ui.navigation.AppNavHost
 import com.minlish.ui.screen.analytics.AnalyticsScreen
 import com.minlish.ui.screen.dashboardHome.HomeScreen
-import com.minlish.ui.screen.deck.DeckScreen
-import com.minlish.ui.screen.flashcard.FlashcardScreen
-import com.minlish.ui.screen.profile.ProfileScreen
-import com.minlish.ui.screen.profile.ProfileStatUiModel
-import com.minlish.ui.theme.MinLishTheme
 import com.minlish.ui.screen.vocabs.AddDeckScreen
-import com.minlish.ui.screen.vocabularyDetail.VocabularyDetailScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppContainer.initialize(applicationContext)
         enableEdgeToEdge()
         setContent {
             MinLishTheme {
                 Surface {
-                    MinLishApp()
+//                    AnalyticsScreen ()
+//                    AddDeckScreen()
+                    AppNavHost()
                 }
             }
         }

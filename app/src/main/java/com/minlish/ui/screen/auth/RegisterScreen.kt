@@ -14,8 +14,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -28,9 +30,25 @@ import com.minlish.ui.common.component.AuthHeader
 import com.minlish.ui.common.component.ButtonAuth
 import com.minlish.ui.common.component.TextFieldAuth
 import com.minlish.ui.common.component.TextFieldAuthPassword
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.text.style.TextAlign
+import com.minlish.domain.model.UserProfile
+import com.minlish.ui.common.viewmodel.AuthViewModel
+import com.minlish.ui.common.viewmodel.AuthViewModelFactory
 
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(
+    onRegisterSuccess: (UserProfile) -> Unit = {},
+    onNavigateLogin: () -> Unit = {},
+    viewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory())
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState.currentUser?.id) {
+        uiState.currentUser?.let(onRegisterSuccess)
+    }
+
     Surface(
         color = Color(0xFFF7EEFE),
         modifier = Modifier
@@ -45,14 +63,22 @@ fun RegisterScreen() {
                 .fillMaxSize()
         ) {
             AuthHeader("Register", "Create an account to get started!")
-            RegisterTextField()
-            BackToLogin()
+            RegisterTextField(
+                uiState = uiState,
+                onRegister = { name, email, password, confirmPassword ->
+                    viewModel.register(name, email, password, confirmPassword)
+                }
+            )
+            BackToLogin(onNavigateLogin = onNavigateLogin)
         }
     }
 }
 
 @Composable
-fun RegisterTextField() {
+fun RegisterTextField(
+    uiState: AuthUiState,
+    onRegister: (String, String, String, String) -> Unit
+) {
     val nameState = remember { mutableStateOf("") }
     val emailState = remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf("") }
@@ -94,12 +120,41 @@ fun RegisterTextField() {
             contentDescription = "Confirm Password",
             isVisible = confirmPasswordVisible
         )
-        ButtonAuth({}, "Register")
+        uiState.errorMessage?.let { message ->
+            Text(
+                text = message,
+                color = Color(0xFFB00020),
+                fontSize = 13.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(bottom = 6.dp)
+            )
+        }
+        uiState.successMessage?.let { message ->
+            Text(
+                text = message,
+                color = Color(0xFF0A7A3B),
+                fontSize = 13.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(bottom = 6.dp)
+            )
+        }
+        ButtonAuth(
+            onClick = {
+                val name = nameState.value.trim()
+                val email = emailState.value.trim()
+                val password = passwordState.value
+                val confirmPassword = confirmPasswordState.value
+                onRegister(name, email, password, confirmPassword)
+            },
+            text = if (uiState.isLoading) "Registering..." else "Register"
+        )
     }
 }
 
 @Composable
-fun BackToLogin() {
+fun BackToLogin(onNavigateLogin: () -> Unit = {}) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -107,7 +162,7 @@ fun BackToLogin() {
             text = "Already have an account?",
         )
         TextButton(
-            onClick = {}
+            onClick = onNavigateLogin
         ) {
             Text(
                 text = "Login",
