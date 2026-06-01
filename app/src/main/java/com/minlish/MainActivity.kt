@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Surface
 import com.minlish.ui.screen.dashboardHome.HomeScreen
+import com.minlish.ui.screen.vocabularyDetail.VocabularyDetailScreen
 import com.minlish.ui.theme.MinLishTheme
 
 class MainActivity : ComponentActivity() {
@@ -15,7 +16,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MinLishTheme {
                 Surface {
-                    HomeScreen()
+                    VocabularyDetailScreen("Gay")
                 }
             }
         }
