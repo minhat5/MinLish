@@ -24,9 +24,8 @@ import com.minlish.ui.screen.auth.SelectCefrLevelScreen
 import com.minlish.ui.screen.auth.SelectLearningGoalScreen
 import com.minlish.ui.screen.auth.SelectLevelScreen
 import com.minlish.ui.screen.dashboardHome.HomeScreen
-import com.minlish.ui.screen.deck.DeckScreen
 import com.minlish.ui.screen.profile.ProfileScreen
-import com.minlish.ui.screen.profile.ProfileStatUiModel
+import com.minlish.ui.screen.vocabs.AddDeckScreen
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LibraryBooks
 import androidx.compose.material.icons.filled.Star
@@ -80,18 +79,20 @@ fun AppNavHost() {
                     handleTabNavigation(route, navController, shouldGuardProfile = true)
                 }
             ) { padding ->
-                DeckScreen(modifier = Modifier.fillMaxSize().padding(padding))
+                AddDeckScreen(modifier = Modifier.fillMaxSize().padding(padding))
             }
         }
         composable(Routes.ANALYTICS) {
-            MainScaffold(
-                currentRoute = Routes.ANALYTICS,
-                onTabSelect = { route ->
-                    handleTabNavigation(route, navController, shouldGuardProfile = true)
+            AnalyticsScreen(
+                modifier = Modifier.fillMaxSize(),
+                selectedBottomTab = routeToTab(Routes.ANALYTICS),
+                onBottomTabClick = { tab ->
+                    handleTabNavigation(tabToRoute(tab), navController, shouldGuardProfile = true)
+                },
+                onProfileClick = {
+                    handleTabNavigation(Routes.PROFILE, navController, shouldGuardProfile = true)
                 }
-            ) { padding ->
-                AnalyticsScreen(modifier = Modifier.fillMaxSize().padding(padding))
-            }
+            )
         }
         composable(Routes.PROFILE) {
             MainScaffold(
@@ -101,7 +102,7 @@ fun AppNavHost() {
                 }
             ) { padding ->
                 ProfileScreen(
-                    profileStats = previewProfileStats, 
+
                     modifier = Modifier.fillMaxSize().padding(padding),
                     onLogout = {
                         authViewModel.logout()
@@ -208,7 +209,7 @@ private fun MainScaffold(
                 mainTitle = "MinLish",
                 subTitle = when (currentRoute) {
                     Routes.HOME -> "Home"
-                    Routes.DECKS -> "Decks"
+                    Routes.DECKS -> "Add Decks"
                     Routes.ANALYTICS -> "Analytics"
                     Routes.PROFILE -> "Profile"
                     else -> null
@@ -266,25 +267,4 @@ private fun tabToRoute(tab: String): String {
     }
 }
 
-private val previewProfileStats = listOf(
-    ProfileStatUiModel(
-        icon = Icons.Filled.LibraryBooks,
-        value = "42",
-        label = "Decks Mastered"
-    ),
-    ProfileStatUiModel(
-        icon = Icons.Filled.Star,
-        value = "128",
-        label = "Perfect Scores"
-    ),
-    ProfileStatUiModel(
-        icon = Icons.Filled.Translate,
-        value = "2.5k",
-        label = "Words Learned"
-    ),
-    ProfileStatUiModel(
-        icon = Icons.Filled.Timer,
-        value = "45h",
-        label = "Study Time"
-    )
-)
+

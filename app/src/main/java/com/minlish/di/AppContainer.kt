@@ -4,7 +4,13 @@ import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.minlish.data.remote.FirebaseAuthService
+import com.minlish.data.remote.FirebaseProfileService
 import com.minlish.data.repository.AuthRepositoryImpl
+import com.minlish.data.repository.ProfileRepositoryImpl
+import com.minlish.domain.repository.AuthRepository
+import com.minlish.domain.repository.ProfileRepository
+import com.minlish.domain.usecase.GetCurrentUserUseCase
+import com.minlish.domain.usecase.GetProfileStatsUseCase
 import com.minlish.data.repository.DashboardRepositoryImpl
 import com.minlish.domain.repository.AuthRepository
 import com.minlish.domain.repository.DashboardRepository
@@ -33,10 +39,16 @@ object AppContainer {
     private val firebaseAuthService: FirebaseAuthService by lazy {
         FirebaseAuthService(firebaseAuth, firebaseFirestore)
     }
+    private val firebaseProfileService: FirebaseProfileService by lazy {
+        FirebaseProfileService(firebaseFirestore)
+    }
 
     // Repositories
     private val authRepository: AuthRepository by lazy {
         AuthRepositoryImpl(firebaseAuthService)
+    }
+    private val profileRepository: ProfileRepository by lazy {
+        ProfileRepositoryImpl(firebaseProfileService)
     }
 
     private val dashboardRepository: DashboardRepository by lazy {
@@ -52,6 +64,7 @@ object AppContainer {
     val observeAuthStateUseCase: ObserveAuthStateUseCase by lazy { ObserveAuthStateUseCase(authRepository) }
     val resetPasswordUseCase: ResetPasswordUseCase by lazy { ResetPasswordUseCase(authRepository) }
     val updateUserProfileUseCase: UpdateUserProfileUseCase by lazy { UpdateUserProfileUseCase(authRepository) }
+    val getProfileStatsUseCase: GetProfileStatsUseCase by lazy { GetProfileStatsUseCase(profileRepository) }
     val getDashboardMetricsUseCase: GetDashboardMetricsUseCase by lazy { GetDashboardMetricsUseCase(dashboardRepository) }
 
     fun initialize(appContext: Context) {

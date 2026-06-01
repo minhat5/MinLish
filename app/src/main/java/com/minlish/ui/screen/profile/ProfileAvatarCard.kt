@@ -37,6 +37,8 @@ fun ProfileAvatarCard(
     name: String = "Đinh Văn Sáng",
     level: String = "Nguyên Anh Hậu Kì",
     xp: String = "9,9999 XP",
+    achievementText: String = "Top 10%",
+    streakText: String = "7 Day Streak",
     onEditClick: () -> Unit = {}
 ) {
     Column(
@@ -99,12 +101,12 @@ fun ProfileAvatarCard(
         ) {
             ProfileAchievementChip(
                 icon = Icons.Filled.EmojiEvents,
-                text = "Top 10%"
+                text = achievementText
             )
             Spacer(modifier = Modifier.width(8.dp))
             ProfileAchievementChip(
                 icon = Icons.Filled.LocalFireDepartment,
-                text = "7 Day Streak",
+                text = streakText,
                 backgroundColor = colorPrimary,
                 contentColor = Color.White
             )
