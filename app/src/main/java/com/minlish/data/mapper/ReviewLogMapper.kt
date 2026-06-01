@@ -2,7 +2,7 @@ package com.minlish.data.mapper
 
 import com.minlish.data.dto.ReviewLogDto
 import com.minlish.domain.model.ReviewLog
-import com.minlish.domain.model.SrsRating
+import com.minlish.core.constant.SrsRating
 
 fun ReviewLogDto.toDomain(): ReviewLog {
     return ReviewLog(

@@ -24,7 +24,9 @@ import androidx.compose.ui.unit.sp
 import com.minlish.ui.theme.*
 
 @Composable
-fun ExamplesCard() {
+fun ExamplesCard(word: String, examples: List<String>) {
+    if (examples.isEmpty()) return
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -52,21 +54,17 @@ fun ExamplesCard() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        ExampleItem(
-            text = buildHighlightedString(
-                fullText = "She sounded ebullient and happy to see him again after so long.",
-                targetWord = word,
-                highlightColor = colorPrimary
+        examples.forEachIndexed { index, example ->
+            ExampleItem(
+                text = buildHighlightedString(
+                    fullText = example,
+                    targetWord = word,
+                    highlightColor = colorPrimary
+                )
             )
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        ExampleItem(
-            text = buildHighlightedString(
-                fullText = "The award winner was in an ebullient mood at the victory party.",
-                targetWord = word,
-                highlightColor = colorPrimary
-            )
-        )
+            if (index < examples.lastIndex) {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
     }
 }

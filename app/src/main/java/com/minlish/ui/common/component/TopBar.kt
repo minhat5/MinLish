@@ -29,6 +29,7 @@ fun TopBar(
 ) {
     Box(
         modifier = Modifier
+            .safeDrawingPadding()
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 16.dp),
         contentAlignment = Alignment.Center

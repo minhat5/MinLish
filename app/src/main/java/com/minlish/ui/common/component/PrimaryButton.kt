@@ -62,12 +62,12 @@ fun PrimaryButton(
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Icon(
-                    imageVector = Icons.Filled.ArrowForward,
-                    contentDescription = "Forward",
-                    tint = Color.White
-                )
+//                Spacer(modifier = Modifier.width(8.dp))
+//                Icon(
+//                    imageVector = Icons.Filled.ArrowForward,
+//                    contentDescription = "Forward",
+//                    tint = Color.White
+//                )
             }
         }
     }

@@ -2,7 +2,7 @@ package com.minlish.data.mapper
 
 import com.minlish.data.dto.DeckDto
 import com.minlish.domain.model.Deck
-import com.minlish.domain.model.DeckStatus
+import com.minlish.core.constant.DeckStatus
 
 fun DeckDto.toDomain(): Deck {
     return Deck(
