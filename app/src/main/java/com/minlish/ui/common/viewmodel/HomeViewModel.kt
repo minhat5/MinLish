@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.minlish.di.AppContainer
 import com.minlish.domain.model.UserProfile
+import com.minlish.domain.usecase.DashboardMetrics
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,13 +20,15 @@ data class HomeUiState(
     val timeRemaining: Int = 0,
     val wordsLearned: Int = 0,
     val weeklyProgress: Int = 0,
+    val streakDays: Int = 0,
     val currentDeckTag: String = "Travel",
     val currentDeckSubtitle: String = "Common Verbs Deck",
     val deckProgress: Int = 0
 )
 
 class HomeViewModel(
-    private val getCurrentUser: suspend () -> UserProfile?
+    private val getCurrentUser: suspend () -> UserProfile?,
+    private val getDashboardMetrics: suspend (userId: String) -> DashboardMetrics
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -41,15 +44,20 @@ class HomeViewModel(
             try {
                 val user = getCurrentUser.invoke()
                 if (user != null) {
+                    // Fetch dashboard metrics based on real data
+                    val metrics = getDashboardMetrics.invoke(user.id)
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             currentUser = user,
-                            dailyGoalPercent = 20,
-                            timeRemaining = 50,
-                            wordsLearned = 363,
-                            weeklyProgress = 36,
-                            deckProgress = 36
+                            dailyGoalPercent = metrics.dailyGoalPercent,
+                            timeRemaining = metrics.timeRemaining,
+                            wordsLearned = metrics.wordsLearned,
+                            weeklyProgress = metrics.weeklyProgress,
+                            streakDays = metrics.streakDays,
+                            currentDeckTag = metrics.currentDeckTag,
+                            currentDeckSubtitle = metrics.currentDeckSubtitle,
+                            deckProgress = metrics.deckProgress
                         )
                     }
                 } else {
@@ -81,7 +89,8 @@ class HomeViewModelFactory : ViewModelProvider.Factory {
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return HomeViewModel(
-                getCurrentUser = AppContainer.getCurrentUserUseCase::invoke
+                getCurrentUser = AppContainer.getCurrentUserUseCase::invoke,
+                getDashboardMetrics = AppContainer.getDashboardMetricsUseCase::invoke
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

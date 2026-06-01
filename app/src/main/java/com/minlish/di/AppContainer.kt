@@ -5,8 +5,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.minlish.data.remote.FirebaseAuthService
 import com.minlish.data.repository.AuthRepositoryImpl
+import com.minlish.data.repository.DashboardRepositoryImpl
 import com.minlish.domain.repository.AuthRepository
+import com.minlish.domain.repository.DashboardRepository
 import com.minlish.domain.usecase.GetCurrentUserUseCase
+import com.minlish.domain.usecase.GetDashboardMetricsUseCase
 import com.minlish.domain.usecase.IsLoggedInUseCase
 import com.minlish.domain.usecase.LoginUseCase
 import com.minlish.domain.usecase.LogoutUseCase
@@ -36,6 +39,10 @@ object AppContainer {
         AuthRepositoryImpl(firebaseAuthService)
     }
 
+    private val dashboardRepository: DashboardRepository by lazy {
+        DashboardRepositoryImpl(firebaseFirestore)
+    }
+
     // Use Cases
     val registerUseCase: RegisterUseCase by lazy { RegisterUseCase(authRepository) }
     val loginUseCase: LoginUseCase by lazy { LoginUseCase(authRepository) }
@@ -45,6 +52,7 @@ object AppContainer {
     val observeAuthStateUseCase: ObserveAuthStateUseCase by lazy { ObserveAuthStateUseCase(authRepository) }
     val resetPasswordUseCase: ResetPasswordUseCase by lazy { ResetPasswordUseCase(authRepository) }
     val updateUserProfileUseCase: UpdateUserProfileUseCase by lazy { UpdateUserProfileUseCase(authRepository) }
+    val getDashboardMetricsUseCase: GetDashboardMetricsUseCase by lazy { GetDashboardMetricsUseCase(dashboardRepository) }
 
     fun initialize(appContext: Context) {
         context = appContext

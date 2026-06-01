@@ -64,7 +64,8 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 WelcomeSection(uiState.currentUser?.displayName ?: "User")
                 BentoGridDashboard(
                     percent = uiState.dailyGoalPercent,
-                    timeRemaining = uiState.timeRemaining
+                    timeRemaining = uiState.timeRemaining,
+                    streakDays = uiState.streakDays
                 )
                 ProgressCard(
                     title = "Continue Learning",
