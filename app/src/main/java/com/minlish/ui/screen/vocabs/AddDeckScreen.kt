@@ -27,9 +27,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun AddDeckScreen(){
-
-    var selectedTabDemo by remember { mutableStateOf("Add") } // Có thể mặc định là Add hoặc Decks
+fun AddDeckScreen(
+    selectedTab: String = "Decks",
+    onBottomTabClick: (String) -> Unit = {}
+){
 
     Scaffold(
         containerColor = Color(0xFFF9F9FF),
@@ -37,8 +38,8 @@ fun AddDeckScreen(){
         // 2. Chèn Bottom Navigation vào thuộc tính bottomBar của Scaffold
         bottomBar = {
             BottomNav(
-                selectedTab = selectedTabDemo,
-                onTabClick = { clickedTab -> selectedTabDemo = clickedTab }
+                selectedTab = selectedTab,
+                onTabClick = onBottomTabClick
             )
         }
     ) { paddingValues ->
