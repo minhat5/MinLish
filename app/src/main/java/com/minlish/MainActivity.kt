@@ -8,6 +8,9 @@ import androidx.compose.material3.Surface
 import com.minlish.ui.theme.MinLishTheme
 import com.minlish.di.AppContainer
 import com.minlish.ui.navigation.AppNavHost
+import com.minlish.ui.screen.analytics.AnalyticsScreen
+import com.minlish.ui.screen.dashboardHome.HomeScreen
+import com.minlish.ui.screen.vocabs.AddDeckScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,7 +20,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             MinLishTheme {
                 Surface {
-                    AppNavHost()
+                    AnalyticsScreen ()
+//                    AddDeckScreen()
                 }
             }
         }

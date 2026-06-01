@@ -83,14 +83,16 @@ fun AppNavHost() {
             }
         }
         composable(Routes.ANALYTICS) {
-            MainScaffold(
-                currentRoute = Routes.ANALYTICS,
-                onTabSelect = { route ->
-                    handleTabNavigation(route, navController, shouldGuardProfile = true)
+            AnalyticsScreen(
+                modifier = Modifier.fillMaxSize(),
+                selectedBottomTab = routeToTab(Routes.ANALYTICS),
+                onBottomTabClick = { tab ->
+                    handleTabNavigation(tabToRoute(tab), navController, shouldGuardProfile = true)
+                },
+                onProfileClick = {
+                    handleTabNavigation(Routes.PROFILE, navController, shouldGuardProfile = true)
                 }
-            ) { padding ->
-                AnalyticsScreen(modifier = Modifier.fillMaxSize().padding(padding))
-            }
+            )
         }
         composable(Routes.PROFILE) {
             MainScaffold(
