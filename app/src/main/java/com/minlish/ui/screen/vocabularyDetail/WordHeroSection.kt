@@ -66,7 +66,7 @@ fun WordHeroSection(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "/$transcription/",
+                text = "$transcription",
                 fontSize = 16.sp,
                 color = colorOnSurfaceVariant
             )
