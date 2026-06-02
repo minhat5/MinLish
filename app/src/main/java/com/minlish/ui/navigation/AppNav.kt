@@ -148,6 +148,7 @@ fun AppNavHost() {
         }
         composable(Routes.LOGIN) {
             LoginScreen(
+                viewModel = authViewModel,
                 onLoginSuccess = { userProfile ->
                     navController.navigate(Routes.HOME) {
                         popUpTo(navController.graph.findStartDestination().id) {
