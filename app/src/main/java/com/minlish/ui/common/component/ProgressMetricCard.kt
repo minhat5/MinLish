@@ -35,6 +35,7 @@ fun ProgressMetricCard(
     modifier: Modifier = Modifier,
     backgroundColor: Color = Color(0xFFF0E7FA),
     contentColor: Color = colorPrimary,
+    iconTint: Color = contentColor,
     supportingTextColor: Color = colorOnSurfaceVariant
 ) {
     Column(
@@ -63,7 +64,7 @@ fun ProgressMetricCard(
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = contentColor,
+                    tint = iconTint,
                     modifier = Modifier.size(18.dp)
                 )
             }
