@@ -23,6 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.minlish.domain.model.Vocabulary
+import com.minlish.ui.common.viewmodel.FlashcardViewModel
+import com.minlish.ui.common.viewmodel.FlashcardViewModelFactory
 import com.minlish.ui.screen.flashcard.components.FlashcardItem
 import com.minlish.ui.screen.flashcard.components.FlashcardLevelSelector
 import com.minlish.ui.screen.flashcard.components.FlashcardProgressBar

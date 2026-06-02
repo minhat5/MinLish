@@ -2,6 +2,7 @@ package com.minlish.data.repository
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.minlish.data.remote.FirebaseCollections
 import com.minlish.domain.model.UserProgress
 import com.minlish.domain.model.Vocabulary
@@ -66,5 +67,39 @@ class FlashcardRepositoryImpl(
             .collection(FirebaseCollections.PROGRESS)
             .document(progress.vocabId)
             .set(progress)
+    }
+
+    override fun updateSessionProgress(
+        userId: String,
+        deckId: String,
+        progresses: List<UserProgress>,
+        learnedWordCount: Int,
+        totalWordCount: Int,
+        deckStatus: String
+    ): Task<Void> {
+        val batch = firestore.batch()
+
+        progresses.forEach { progress ->
+            val progressRef = firestore.collection(FirebaseCollections.USERS)
+                .document(userId)
+                .collection(FirebaseCollections.PROGRESS)
+                .document(progress.vocabId)
+            batch.set(progressRef, progress)
+        }
+
+        val deckRef = firestore.collection(FirebaseCollections.DECKS)
+            .document(deckId)
+        batch.set(
+            deckRef,
+            mapOf(
+                "learnedWordCount" to learnedWordCount,
+                "totalWordCount" to totalWordCount,
+                "status" to deckStatus,
+                "updatedAt" to System.currentTimeMillis()
+            ),
+            SetOptions.merge()
+        )
+
+        return batch.commit()
     }
 }

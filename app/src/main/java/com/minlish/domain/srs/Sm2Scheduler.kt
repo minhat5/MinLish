@@ -12,7 +12,6 @@ data class Sm2Result(
 
 object Sm2Scheduler {
     private const val MIN_EASE_FACTOR = 1.3
-    private const val MINUTE_MILLIS = 60_000L
     private const val DAY_MILLIS = 24 * 60 * 60 * 1000L
 
     fun calculate(
@@ -27,7 +26,7 @@ object Sm2Scheduler {
                 easeFactor = oldEaseFactor.coerceAtLeast(MIN_EASE_FACTOR),
                 repetition = 0,
                 interval = 0,
-                nextReviewDate = now + MINUTE_MILLIS
+                nextReviewDate = now
             )
         }
 

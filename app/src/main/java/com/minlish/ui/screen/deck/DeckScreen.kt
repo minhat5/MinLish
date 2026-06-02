@@ -16,17 +16,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.minlish.domain.model.Deck
+import com.minlish.ui.common.viewmodel.DeckViewModel
+import com.minlish.ui.common.viewmodel.DeckViewModelFactory
 import com.minlish.ui.screen.deck.components.DeckItem
 import com.minlish.ui.theme.MinLishTheme
 import com.minlish.ui.theme.colorPrimary
@@ -50,6 +52,10 @@ fun DeckScreen(
     modifier: Modifier = Modifier,
     viewModel: DeckViewModel = viewModel(factory = DeckViewModelFactory())
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.loadDecks()
+    }
+
     val uiState by viewModel.uiState.collectAsState()
 
     DeckScreenContent(
@@ -94,12 +100,6 @@ private fun DeckScreenContent(
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
         ) {
-            Text(text = "Your Decks", fontSize = 28.sp, fontWeight = FontWeight.ExtraBold, color = Color(0xFF1A1A1A))
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = "Ready to learn something new?", fontSize = 15.sp, color = Color(0xFF757575))
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             when {
                 isLoading -> {
                     Box(modifier = Modifier.fillMaxSize()) {

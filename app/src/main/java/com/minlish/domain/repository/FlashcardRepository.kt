@@ -11,5 +11,14 @@ interface FlashcardRepository {
     fun getUserProgressMap(userId: String, deckId: String): Flow<Map<String, UserProgress>>
 
     fun updateUserProgress(userId: String, progress: UserProgress): Task<Void>
+
+    fun updateSessionProgress(
+        userId: String,
+        deckId: String,
+        progresses: List<UserProgress>,
+        learnedWordCount: Int,
+        totalWordCount: Int,
+        deckStatus: String
+    ): Task<Void>
 }
  

@@ -1,4 +1,4 @@
-package com.minlish.ui.screen.deck
+package com.minlish.ui.common.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

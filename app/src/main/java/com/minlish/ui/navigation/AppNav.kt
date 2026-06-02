@@ -239,7 +239,7 @@ private fun MainScaffold(
                 mainTitle = "MinLish",
                 subTitle = when (currentRoute) {
                     Routes.HOME -> "Home"
-                    Routes.DECKS -> "Add Decks"
+                    Routes.DECKS -> "Decks"
                     Routes.ANALYTICS -> "Analytics"
                     Routes.PROFILE -> "Profile"
                     else -> null
