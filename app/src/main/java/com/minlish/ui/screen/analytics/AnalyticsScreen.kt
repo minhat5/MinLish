@@ -16,6 +16,7 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -26,22 +27,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.minlish.ui.common.component.BottomNav
 import com.minlish.ui.common.component.TopBar
+import com.minlish.ui.common.viewmodel.AnalyticsUiState
+import com.minlish.ui.common.viewmodel.AnalyticsViewModel
+import com.minlish.ui.common.viewmodel.AnalyticsViewModelFactory
 import com.minlish.ui.theme.*
 
 @Composable
 fun AnalyticsScreen(
     modifier: Modifier = Modifier,
-    progressSummaryData: ProgressSummaryData = ProgressSummaryData(),
     retentionLevels: List<RetentionLevelData> = defaultRetentionLevelData(),
     wordsReadyForReview: Int = 1547,
     selectedBottomTab: String = "Analytics",
     onBottomTabClick: (String) -> Unit = {},
     onProfileClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
-    onStartReviewSession: () -> Unit = {}
+    onStartReviewSession: () -> Unit = {},
+    viewModel: AnalyticsViewModel = viewModel(factory = AnalyticsViewModelFactory())
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     Scaffold(
         modifier = modifier,
         containerColor = colorSurface,
@@ -64,7 +71,7 @@ fun AnalyticsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            progressSummaryData = progressSummaryData,
+            uiState = uiState,
             retentionLevels = retentionLevels,
             wordsReadyForReview = wordsReadyForReview,
             onStartReviewSession = onStartReviewSession
@@ -75,7 +82,7 @@ fun AnalyticsScreen(
 @Composable
 private fun AnalyticsContent(
     modifier: Modifier = Modifier,
-    progressSummaryData: ProgressSummaryData,
+    uiState: AnalyticsUiState,
     retentionLevels: List<RetentionLevelData>,
     wordsReadyForReview: Int,
     onStartReviewSession: () -> Unit
@@ -131,7 +138,7 @@ private fun AnalyticsContent(
                 .padding(horizontal = 16.dp, vertical = 24.dp)
         ) {
             when (selectedTabIndex) {
-                0 -> ProgressTabContent(progressSummaryData = progressSummaryData)
+                0 -> ProgressTabContent(uiState = uiState)
                 1 -> RetentionTabContent(
                     levels = retentionLevels,
                     wordsReadyForReview = wordsReadyForReview,
@@ -145,9 +152,7 @@ private fun AnalyticsContent(
 }
 
 @Composable
-private fun ProgressTabContent(
-    progressSummaryData: ProgressSummaryData
-) {
+private fun ProgressTabContent(uiState: AnalyticsUiState) {
     Text(
         text = "Your Progress",
         color = colorOnSurface,
@@ -163,10 +168,15 @@ private fun ProgressTabContent(
     )
 
     Spacer(modifier = Modifier.height(24.dp))
-    ProgressSummary(data = progressSummaryData)
+    ProgressSummary(data = uiState.progressSummaryData)
 
     Spacer(modifier = Modifier.height(24.dp))
-    WeeklyConsistencyChart()
+    ConsistencyChart(
+        weeklyEntries = uiState.weeklyEntries,
+        monthlyEntries = uiState.monthlyEntries,
+        firstMonthDayOffset = uiState.firstMonthDayOffset,
+        hasStudiedToday = uiState.hasStudiedToday
+    )
 }
 
 @Preview(showBackground = true)
