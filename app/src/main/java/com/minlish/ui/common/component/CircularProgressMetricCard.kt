@@ -38,6 +38,7 @@ fun CircularProgressMetricCard(
     icon: ImageVector,
     progress: Float,
     modifier: Modifier = Modifier,
+    detail: String? = null,
     backgroundColor: Color = Color(0xFFFFEDC2),
     contentColor: Color = Color(0xFFC9A13C),
     supportingTextColor: Color = colorOnSurfaceVariant
@@ -65,6 +66,14 @@ fun CircularProgressMetricCard(
                 fontSize = 34.sp,
                 fontWeight = FontWeight.ExtraBold
             )
+            if (!detail.isNullOrBlank()) {
+                Text(
+                    text = detail,
+                    color = supportingTextColor,
+                    fontSize = 12.sp,
+                    lineHeight = 14.sp
+                )
+            }
         }
 
         Box(contentAlignment = Alignment.Center) {
@@ -104,7 +113,7 @@ fun CircularProgressMetricCard(
                 tint = contentColor,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .size(18.dp)
+                    .size(0.dp)
             )
         }
     }
