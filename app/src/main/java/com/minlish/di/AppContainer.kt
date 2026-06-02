@@ -7,8 +7,10 @@ import com.minlish.data.remote.FirebaseAuthService
 import com.minlish.data.remote.FirebaseDeckService
 import com.minlish.data.remote.FirebaseProfileService
 import com.minlish.data.repository.AuthRepositoryImpl
+import com.minlish.data.repository.FlashcardRepositoryImpl
 import com.minlish.data.repository.ProfileRepositoryImpl
 import com.minlish.domain.repository.AuthRepository
+import com.minlish.domain.repository.FlashcardRepository
 import com.minlish.domain.repository.ProfileRepository
 import com.minlish.domain.usecase.GetCurrentUserUseCase
 import com.minlish.domain.usecase.GetProfileStatsUseCase
@@ -55,6 +57,9 @@ object AppContainer {
 
     private val dashboardRepository: DashboardRepository by lazy {
         DashboardRepositoryImpl(firebaseFirestore)
+    }
+    val flashcardRepository: FlashcardRepository by lazy {
+        FlashcardRepositoryImpl(firebaseFirestore)
     }
 
     // Use Cases

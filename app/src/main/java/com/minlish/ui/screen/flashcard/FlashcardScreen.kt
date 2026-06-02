@@ -13,11 +13,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,42 +42,37 @@ fun FlashcardScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(uiState.isCompleted, uiState.isLoading) {
+        if (uiState.isCompleted && !uiState.isLoading) {
+            onBackToHome()
+        }
+    }
+
     FlashcardScreenContent(
-        vocabList = uiState.vocabularies,
+        currentVocabulary = uiState.currentVocabulary,
+        currentIndex = uiState.currentIndex,
+        totalCount = uiState.totalCount,
         isLoading = uiState.isLoading,
         errorMessage = uiState.errorMessage,
         onBackToHome = onBackToHome,
         onViewDetailClick = onViewDetailClick,
+        onAnswerSelected = viewModel::onAnswerSelected,
         modifier = modifier
     )
 }
 
 @Composable
 private fun FlashcardScreenContent(
-    vocabList: List<Vocabulary>,
+    currentVocabulary: Vocabulary?,
+    currentIndex: Int,
+    totalCount: Int,
     isLoading: Boolean,
     errorMessage: String?,
     onBackToHome: () -> Unit,
     onViewDetailClick: () -> Unit,
+    onAnswerSelected: (quality: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var currentIndex by remember { mutableIntStateOf(0) }
-
-    if (currentIndex >= vocabList.size && vocabList.isNotEmpty()) {
-        currentIndex = 0
-    }
-
-    val totalCount = vocabList.size
-    val displayCurrent = if (totalCount > 0) currentIndex + 1 else 0
-
-    val onNextCard = {
-        if (currentIndex < vocabList.size - 1) {
-            currentIndex++
-        } else {
-            onBackToHome()
-        }
-    }
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -89,7 +82,7 @@ private fun FlashcardScreenContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         FlashcardProgressBar(
-            current = displayCurrent,
+            current = currentIndex,
             total = totalCount,
             onCloseClick = onBackToHome
         )
@@ -113,10 +106,10 @@ private fun FlashcardScreenContent(
                 }
             }
 
-            vocabList.isEmpty() -> {
+            currentVocabulary == null -> {
                 Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                     Text(
-                        text = "No vocabulary in this deck.",
+                        text = "No cards due now.",
                         color = Color(0xFF757575),
                         modifier = Modifier.align(Alignment.Center)
                     )
@@ -124,12 +117,10 @@ private fun FlashcardScreenContent(
             }
 
             else -> {
-                val currentVocab = vocabList[currentIndex]
-
                 FlashcardItem(
-                    word = currentVocab.word,
-                    phonetic = currentVocab.phonetic,
-                    meaning = currentVocab.meaning,
+                    word = currentVocabulary.word,
+                    phonetic = currentVocabulary.phonetic,
+                    meaning = currentVocabulary.meaning,
                     modifier = Modifier.weight(1f)
                 )
 
@@ -149,12 +140,12 @@ private fun FlashcardScreenContent(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        if (vocabList.isNotEmpty()) {
+        if (currentVocabulary != null) {
             FlashcardLevelSelector(
-                onAgain = { onNextCard() },
-                onHard = { onNextCard() },
-                onGood = { onNextCard() },
-                onEasy = { onNextCard() },
+                onAgain = { onAnswerSelected(1) },
+                onHard = { onAnswerSelected(3) },
+                onGood = { onAnswerSelected(4) },
+                onEasy = { onAnswerSelected(5) },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -166,11 +157,14 @@ private fun FlashcardScreenContent(
 fun FlashcardScreenPreview() {
     MinLishTheme {
         FlashcardScreenContent(
-            vocabList = listOf(Vocabulary("hello", "/heh-LOH/", "xin chao", "preview")),
+            currentVocabulary = Vocabulary("hello", "/heh-LOH/", "xin chao", "preview"),
+            currentIndex = 1,
+            totalCount = 2,
             isLoading = false,
             errorMessage = null,
             onBackToHome = {},
-            onViewDetailClick = {}
+            onViewDetailClick = {},
+            onAnswerSelected = {}
         )
     }
 }
