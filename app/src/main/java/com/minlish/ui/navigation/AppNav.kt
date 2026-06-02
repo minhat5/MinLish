@@ -132,12 +132,11 @@ fun AppNavHost() {
                 }
             ) { padding ->
                 ProfileScreen(
-
                     modifier = Modifier.fillMaxSize().padding(padding),
                     onLogout = {
                         authViewModel.logout()
                         navController.navigate(Routes.LOGIN) {
-                            popUpTo(navController.graph.findStartDestination().id) {
+                            popUpTo(0) {
                                 inclusive = true
                             }
                             launchSingleTop = true
@@ -151,11 +150,11 @@ fun AppNavHost() {
                 viewModel = authViewModel,
                 onLoginSuccess = { userProfile ->
                     navController.navigate(Routes.HOME) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+                        popUpTo(Routes.LOGIN) {
+                            inclusive = true
                         }
                         launchSingleTop = true
-                        restoreState = true
+                        //restoreState = true
                     }
                 },
                 onNavigateRegister = { navController.navigate(Routes.REGISTER) }
@@ -163,6 +162,7 @@ fun AppNavHost() {
         }
         composable(Routes.REGISTER) {
             RegisterScreen(
+                viewModel = authViewModel,
                 onRegisterSuccess = { userProfile ->
                     navController.navigate(Routes.SELECT_LEVEL) {
                         popUpTo(Routes.REGISTER) { inclusive = true }
