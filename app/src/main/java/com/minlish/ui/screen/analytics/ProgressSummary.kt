@@ -5,8 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.filled.Workspaces
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,7 +44,7 @@ fun ProgressSummary(
                 title = "Mastered\nWords",
                 value = data.masteredWords,
                 detail = data.masteredWordsDetail,
-                icon = Icons.Filled.Workspaces
+                icon = Icons.Filled.CheckCircle
             )
             ProgressMetricCard(
                 modifier = Modifier.weight(1f),
@@ -60,7 +61,7 @@ fun ProgressSummary(
             value = data.retentionRate,
             progress = data.retentionProgress,
             detail = data.retentionDetail,
-            icon = Icons.Filled.Workspaces
+            icon = Icons.Filled.PieChart
         )
     }
 }

@@ -113,7 +113,7 @@ fun CircularProgressMetricCard(
                 tint = contentColor,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .size(18.dp)
+                    .size(0.dp)
             )
         }
     }

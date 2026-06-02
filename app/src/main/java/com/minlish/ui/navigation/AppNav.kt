@@ -85,9 +85,9 @@ fun AppNavHost() {
                 DeckScreen(
                     modifier = Modifier.fillMaxSize().padding(padding),
                     onAddDeckClick = {
-                    navController.navigate(Routes.ADD_DECK)
-                },
-                onDeckSelect = { deckId -> navController.navigate(Routes.FLASHCARD) })
+                        navController.navigate(Routes.ADD_DECK)
+                    },
+                    onDeckSelect = { deckId -> navController.navigate(Routes.FLASHCARD) })
             }
         }
         composable(Routes.ADD_DECK) {
