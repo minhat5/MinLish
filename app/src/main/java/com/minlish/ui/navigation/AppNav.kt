@@ -28,9 +28,11 @@ import com.minlish.ui.screen.profile.ProfileScreen
 import com.minlish.ui.screen.vocabs.AddDeckScreen
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import com.minlish.ui.screen.deck.DeckScreen
 import com.minlish.ui.screen.flashcard.FlashcardScreen
 import com.minlish.ui.screen.vocabularyDetail.VocabularyDetailScreen
+import androidx.navigation.navArgument
 
 private object Routes {
     const val HOME = "home"
@@ -42,9 +44,12 @@ private object Routes {
     const val SELECT_LEVEL = "selectLevel"
     const val SELECT_CERTIFICATE = "selectCertificate"
     const val SELECT_LEARNING_GOAL = "selectLearningGoal"
-    const val FLASHCARD = "flashcard"
+    const val ARG_DECK_ID = "deckId"
+    const val FLASHCARD = "flashcard/{$ARG_DECK_ID}"
     const val VOCABULARY_DETAIL = "vocabulary_detail"
     const val ADD_DECK = "add_deck"
+
+    fun flashcard(deckId: String): String = "flashcard/$deckId"
 }
 
 @Composable
@@ -87,14 +92,19 @@ fun AppNavHost() {
                     onAddDeckClick = {
                     navController.navigate(Routes.ADD_DECK)
                 },
-                onDeckSelect = { deckId -> navController.navigate(Routes.FLASHCARD) })
+                onDeckSelect = { deckId -> navController.navigate(Routes.flashcard(deckId)) })
             }
         }
         composable(Routes.ADD_DECK) {
             AddDeckScreen()
         }
-        composable(Routes.FLASHCARD) {
+        composable(
+            route = Routes.FLASHCARD,
+            arguments = listOf(navArgument(Routes.ARG_DECK_ID) { type = NavType.StringType })
+        ) { backStackEntry ->
+            val deckId = backStackEntry.arguments?.getString(Routes.ARG_DECK_ID).orEmpty()
             FlashcardScreen(
+                deckId = deckId,
                 onBackToHome = { navController.popBackStack(Routes.DECKS, inclusive = false) },
                 onViewDetailClick = { navController.navigate(Routes.VOCABULARY_DETAIL) }
             )

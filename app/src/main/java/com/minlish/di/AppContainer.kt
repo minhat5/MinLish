@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.minlish.data.remote.FirebaseAuthService
+import com.minlish.data.remote.FirebaseDeckService
 import com.minlish.data.remote.FirebaseProfileService
 import com.minlish.data.repository.AuthRepositoryImpl
 import com.minlish.data.repository.ProfileRepositoryImpl
@@ -40,6 +41,9 @@ object AppContainer {
     private val firebaseProfileService: FirebaseProfileService by lazy {
         FirebaseProfileService(firebaseFirestore)
     }
+    val firebaseDeckService: FirebaseDeckService by lazy {
+        FirebaseDeckService(firebaseFirestore)
+    }
 
     // Repositories
     private val authRepository: AuthRepository by lazy {
@@ -67,6 +71,10 @@ object AppContainer {
 
     fun initialize(appContext: Context) {
         context = appContext
+    }
+
+    fun getCurrentUserId(): String? {
+        return firebaseAuth.currentUser?.uid
     }
 }
 
