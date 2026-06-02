@@ -36,6 +36,7 @@ fun FlashcardScreen(
     deckId: String,
     onBackToHome: () -> Unit = {},
     onViewDetailClick: (String) -> Unit = {},
+    onSessionComplete: (wordsCount: Int, accuracy: Int) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
     viewModel: FlashcardViewModel = viewModel(
         key = deckId,
@@ -46,7 +47,7 @@ fun FlashcardScreen(
 
     LaunchedEffect(uiState.isCompleted, uiState.isLoading) {
         if (uiState.isCompleted && !uiState.isLoading) {
-            onBackToHome()
+            onSessionComplete(uiState.wordsCount, uiState.accuracy)
         }
     }
 

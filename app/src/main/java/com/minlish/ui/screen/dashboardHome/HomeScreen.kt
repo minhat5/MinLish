@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.minlish.ui.common.component.ProgressCard
+import com.minlish.ui.common.state.StreakState
 import com.minlish.ui.common.viewmodel.HomeViewModel
 import com.minlish.ui.common.viewmodel.HomeViewModelFactory
 import com.minlish.ui.theme.*
@@ -67,7 +68,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                  BentoGridDashboard(
                      percent = uiState.dailyGoalPercent,
                      timeRemaining = uiState.timeRemaining,
-                     streakDays = uiState.streakDays
+                     streakDays = StreakState.streakCount
                  )
                  ProgressCard(
                      title = "Continue Learning",

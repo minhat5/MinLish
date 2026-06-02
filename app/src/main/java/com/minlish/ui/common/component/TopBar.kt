@@ -19,11 +19,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import com.minlish.ui.common.state.StreakState
+
 @Composable
 fun TopBar(
     mainTitle: String = "MinLish",        // Tiêu đề chính, mặc định là MinLish
     subTitle: String? = null,             // Tiêu đề phụ dưới dạng tùy chọn (nullable)
-    streakCount: Int = 12,                // Số lượng streak demo
+    streakCount: Int = StreakState.streakCount, // Số lượng streak từ state
     onProfileClick: () -> Unit = {},      // Sự kiện khi bấm vào Profile
     onSettingsClick: () -> Unit = {}      // Sự kiện khi bấm vào Cài đặt
 ) {

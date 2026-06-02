@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.minlish.ui.common.state.StreakState
 
 data class ProfileUiState(
     val isLoading: Boolean = true,
@@ -58,7 +59,9 @@ class ProfileViewModel(
                     return@launch
                 }
 
+                StreakState.currentUserId = user.id
                 val stats = getProfileStats(user.id)
+                StreakState.streakCount = stats.streakDays
                 _uiState.update {
                     it.copy(
                         isLoading = false,

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.minlish.ui.common.state.StreakState
 
 data class HomeUiState(
     val isLoading: Boolean = true,
@@ -44,8 +45,10 @@ class HomeViewModel(
             try {
                 val user = getCurrentUser.invoke()
                 if (user != null) {
+                    StreakState.currentUserId = user.id
                     // Fetch dashboard metrics based on real data
                     val metrics = getDashboardMetrics.invoke(user.id)
+                    StreakState.streakCount = metrics.streakDays
                     _uiState.update {
                         it.copy(
                             isLoading = false,

@@ -32,6 +32,7 @@ import androidx.navigation.NavType
 import com.minlish.ui.screen.deck.DeckScreen
 import com.minlish.ui.screen.flashcard.FlashcardScreen
 import com.minlish.ui.screen.vocabularyDetail.VocabularyDetailScreen
+import com.minlish.ui.screen.dailyReviewSummary.DailyReviewSummary
 import androidx.navigation.navArgument
 
 private object Routes {
@@ -48,10 +49,14 @@ private object Routes {
     const val FLASHCARD = "flashcard/{$ARG_DECK_ID}"
     const val ARG_WORD = "word"
     const val VOCABULARY_DETAIL = "vocabulary_detail/{$ARG_WORD}"
+    const val ARG_WORDS_COUNT = "wordsCount"
+    const val ARG_ACCURACY = "accuracy"
+    const val DAILY_REVIEW_SUMMARY = "daily_review_summary/{$ARG_WORDS_COUNT}/{$ARG_ACCURACY}"
     const val ADD_DECK = "add_deck"
 
     fun flashcard(deckId: String): String = "flashcard/$deckId"
     fun vocabularyDetail(word: String): String = "vocabulary_detail/$word"
+    fun dailyReviewSummary(wordsCount: Int, accuracy: Int): String = "daily_review_summary/$wordsCount/$accuracy"
 }
 
 @Composable
@@ -108,7 +113,12 @@ fun AppNavHost() {
             FlashcardScreen(
                 deckId = deckId,
                 onBackToHome = { navController.popBackStack(Routes.DECKS, inclusive = false) },
-                onViewDetailClick = { word -> navController.navigate(Routes.vocabularyDetail(word)) }
+                onViewDetailClick = { word -> navController.navigate(Routes.vocabularyDetail(word)) },
+                onSessionComplete = { wordsCount, accuracy ->
+                    navController.navigate(Routes.dailyReviewSummary(wordsCount, accuracy)) {
+                        popUpTo(Routes.flashcard(deckId)) { inclusive = true }
+                    }
+                }
             )
         }
         composable(
@@ -119,6 +129,23 @@ fun AppNavHost() {
             VocabularyDetailScreen(
                 word = word,
                 onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(
+            route = Routes.DAILY_REVIEW_SUMMARY,
+            arguments = listOf(
+                navArgument(Routes.ARG_WORDS_COUNT) { type = NavType.IntType },
+                navArgument(Routes.ARG_ACCURACY) { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val wordsCount = backStackEntry.arguments?.getInt(Routes.ARG_WORDS_COUNT) ?: 0
+            val accuracy = backStackEntry.arguments?.getInt(Routes.ARG_ACCURACY) ?: 0
+            DailyReviewSummary(
+                wordsCount = wordsCount,
+                accuracy = accuracy,
+                onContinueClick = {
+                    navController.popBackStack(Routes.DECKS, inclusive = false)
+                }
             )
         }
         composable(Routes.ANALYTICS) {

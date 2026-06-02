@@ -12,13 +12,13 @@ interface FlashcardRepository {
 
     fun updateUserProgress(userId: String, progress: UserProgress): Task<Void>
 
-    fun updateSessionProgress(
+    suspend fun updateSessionProgress(
         userId: String,
         deckId: String,
         progresses: List<UserProgress>,
         learnedWordCount: Int,
         totalWordCount: Int,
         deckStatus: String
-    ): Task<Void>
+    ): Int
 }
  
