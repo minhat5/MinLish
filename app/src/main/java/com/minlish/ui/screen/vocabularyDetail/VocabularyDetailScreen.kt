@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.minlish.data.api.RetrofitInstance
 import com.minlish.ui.common.component.PrimaryButton
+import com.minlish.ui.common.viewmodel.VocabularyViewModel
 import com.minlish.ui.theme.*
 
 
@@ -32,6 +33,7 @@ fun VocabularyDetailScreen(
     )
 ) {
     LaunchedEffect(word) {
+
         viewModel.loadWord(word)
     }
     val data = viewModel.uiState

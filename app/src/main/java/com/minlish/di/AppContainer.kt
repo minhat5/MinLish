@@ -4,12 +4,15 @@ import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.minlish.data.remote.FirebaseAuthService
+import com.minlish.data.remote.FirebaseDeckService
 import com.minlish.data.remote.FirebaseProfileService
 import com.minlish.data.repository.AnalyticsRepositoryImpl
 import com.minlish.data.repository.AuthRepositoryImpl
+import com.minlish.data.repository.FlashcardRepositoryImpl
 import com.minlish.data.repository.ProfileRepositoryImpl
 import com.minlish.domain.repository.AnalyticsRepository
 import com.minlish.domain.repository.AuthRepository
+import com.minlish.domain.repository.FlashcardRepository
 import com.minlish.domain.repository.ProfileRepository
 import com.minlish.domain.usecase.GetCurrentUserUseCase
 import com.minlish.domain.usecase.GetProfileStatsUseCase
@@ -43,6 +46,9 @@ object AppContainer {
     private val firebaseProfileService: FirebaseProfileService by lazy {
         FirebaseProfileService(firebaseFirestore)
     }
+    val firebaseDeckService: FirebaseDeckService by lazy {
+        FirebaseDeckService(firebaseFirestore)
+    }
 
     // Repositories
     private val authRepository: AuthRepository by lazy {
@@ -54,6 +60,9 @@ object AppContainer {
 
     private val dashboardRepository: DashboardRepository by lazy {
         DashboardRepositoryImpl(firebaseFirestore)
+    }
+    val flashcardRepository: FlashcardRepository by lazy {
+        FlashcardRepositoryImpl(firebaseFirestore)
     }
 
     private val analyticsRepository: AnalyticsRepository by lazy {
@@ -75,6 +84,10 @@ object AppContainer {
 
     fun initialize(appContext: Context) {
         context = appContext
+    }
+
+    fun getCurrentUserId(): String? {
+        return firebaseAuth.currentUser?.uid
     }
 }
 
