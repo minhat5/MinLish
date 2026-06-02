@@ -12,6 +12,8 @@ data class UserProfile(
     val learningGoal: LearningGoal = LearningGoal.COMMUNICATION,
     val levelEstimate: LevelEstimate = LevelEstimate.BEGINNER,
     val cefrLevel: CefrLevel? = null,
+    val streak: Int = 0,
+    val lastStudyDate: String? = null,
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L
 )

@@ -9,6 +9,8 @@ data class AuthResponseDto(
     val learningGoal: String = "COMMUNICATION",
     val levelEstimate: String = "BEGINNER",
     val cefrLevel: String? = null,
+    val streak: Int = 0,
+    val lastStudyDate: String? = null,
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L
 )

@@ -13,8 +13,11 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import com.minlish.data.dto.ProgressSnapshotDto
 import com.minlish.data.dto.DailyActivityDto
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import com.minlish.data.dto.UserProfileDto
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class FlashcardRepositoryImpl(
     private val firestore: FirebaseFirestore
@@ -82,35 +85,48 @@ class FlashcardRepositoryImpl(
         totalWordCount: Int,
         deckStatus: String
     ): Int {
-        // 1. Fetch current progress snapshot
-        val progressSnapshotRef = firestore.collection(FirebaseCollections.PROGRESS)
-            .document(userId)
-        
-        val snapshot = try {
-            progressSnapshotRef.get().await().toObject(ProgressSnapshotDto::class.java)
+        // 1. Fetch current user profile
+        val userRef = firestore.collection(FirebaseCollections.USERS).document(userId)
+        val userSnapshot = try {
+            userRef.get().await().toObject(UserProfileDto::class.java)
         } catch (e: Exception) {
             null
         }
 
-        val today = LocalDate.now().format(DateTimeFormatter.ISO_DATE)
-        val yesterday = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE)
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val today = dateFormat.format(Date())
 
-        val dailyActivities = snapshot?.dailyActivities?.toMutableList() ?: mutableListOf()
-        val todayActivityIndex = dailyActivities.indexOfFirst { it.date == today }
+        val cal = Calendar.getInstance()
+        cal.add(Calendar.DAY_OF_YEAR, -1)
+        val yesterday = dateFormat.format(cal.time)
 
-        val sessionReviewsCount = progresses.size
-        val sessionEasyCount = progresses.count { it.lastRating == "EASY" }
+        var currentStreak = userSnapshot?.streak ?: 0
+        val lastStudyDate = userSnapshot?.lastStudyDate
 
-        val studiedTodayAlready = dailyActivities.any { it.date == today && (it.totalAnswers > 0 || it.newWordsLearned > 0 || it.reviewsCompleted > 0) }
-        val studiedYesterday = dailyActivities.any { it.date == yesterday && (it.totalAnswers > 0 || it.newWordsLearned > 0 || it.reviewsCompleted > 0) }
+        val studiedTodayAlready = lastStudyDate == today
+        val studiedYesterday = lastStudyDate == yesterday
 
-        var currentStreak = snapshot?.streakDays ?: 0
         if (!studiedYesterday && !studiedTodayAlready) {
             currentStreak = 0
         }
         if (!studiedTodayAlready) {
             currentStreak += 1
         }
+
+        // 2. Fetch progress snapshot to keep dailyActivities in sync
+        val progressSnapshotRef = firestore.collection(FirebaseCollections.PROGRESS)
+            .document(userId)
+        val snapshot = try {
+            progressSnapshotRef.get().await().toObject(ProgressSnapshotDto::class.java)
+        } catch (e: Exception) {
+            null
+        }
+
+        val dailyActivities = snapshot?.dailyActivities?.toMutableList() ?: mutableListOf()
+        val todayActivityIndex = dailyActivities.indexOfFirst { it.date == today }
+
+        val sessionReviewsCount = progresses.size
+        val sessionEasyCount = progresses.count { it.lastRating == "EASY" }
 
         val todayActivity = if (todayActivityIndex >= 0) {
             val existing = dailyActivities[todayActivityIndex]
@@ -140,7 +156,7 @@ class FlashcardRepositoryImpl(
             updatedAt = System.currentTimeMillis()
         )
 
-        // 2. Commit batch
+        // 3. Commit batch
         val batch = firestore.batch()
 
         progresses.forEach { progress ->
@@ -162,6 +178,16 @@ class FlashcardRepositoryImpl(
                 "updatedAt" to System.currentTimeMillis()
             ),
             SetOptions.merge()
+        )
+
+        // Update user profile document directly
+        batch.update(
+            userRef,
+            mapOf(
+                "streak" to currentStreak,
+                "lastStudyDate" to today,
+                "updatedAt" to System.currentTimeMillis()
+            )
         )
 
         batch.set(progressSnapshotRef, updatedProgressDto)

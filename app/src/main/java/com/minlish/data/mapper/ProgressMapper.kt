@@ -5,13 +5,20 @@ import com.minlish.data.dto.ProgressSnapshotDto
 import com.minlish.domain.model.DailyActivity
 import com.minlish.core.constant.LevelEstimate
 import com.minlish.domain.model.ProgressSnapshot
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 fun ProgressSnapshotDto.toDomain(): ProgressSnapshot {
     val domainActivities = dailyActivities.map { it.toDomain() }
-    val today = LocalDate.now().format(DateTimeFormatter.ISO_DATE)
-    val yesterday = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE)
+    
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    val today = dateFormat.format(Date())
+    
+    val cal = Calendar.getInstance()
+    cal.add(Calendar.DAY_OF_YEAR, -1)
+    val yesterday = dateFormat.format(cal.time)
 
     val studiedToday = domainActivities.any { it.date == today && (it.totalAnswers > 0 || it.newWordsLearned > 0 || it.reviewsCompleted > 0) }
     val studiedYesterday = domainActivities.any { it.date == yesterday && (it.totalAnswers > 0 || it.newWordsLearned > 0 || it.reviewsCompleted > 0) }
