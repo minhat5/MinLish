@@ -28,9 +28,11 @@ import com.minlish.ui.screen.profile.ProfileScreen
 import com.minlish.ui.screen.vocabs.AddDeckScreen
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import com.minlish.ui.screen.deck.DeckScreen
 import com.minlish.ui.screen.flashcard.FlashcardScreen
 import com.minlish.ui.screen.vocabularyDetail.VocabularyDetailScreen
+import androidx.navigation.navArgument
 
 private object Routes {
     const val HOME = "home"
@@ -42,9 +44,12 @@ private object Routes {
     const val SELECT_LEVEL = "selectLevel"
     const val SELECT_CERTIFICATE = "selectCertificate"
     const val SELECT_LEARNING_GOAL = "selectLearningGoal"
-    const val FLASHCARD = "flashcard"
+    const val ARG_DECK_ID = "deckId"
+    const val FLASHCARD = "flashcard/{$ARG_DECK_ID}"
     const val VOCABULARY_DETAIL = "vocabulary_detail"
     const val ADD_DECK = "add_deck"
+
+    fun flashcard(deckId: String): String = "flashcard/$deckId"
 }
 
 @Composable
@@ -87,14 +92,19 @@ fun AppNavHost() {
                     onAddDeckClick = {
                     navController.navigate(Routes.ADD_DECK)
                 },
-                onDeckSelect = { deckId -> navController.navigate(Routes.FLASHCARD) })
+                onDeckSelect = { deckId -> navController.navigate(Routes.flashcard(deckId)) })
             }
         }
         composable(Routes.ADD_DECK) {
             AddDeckScreen()
         }
-        composable(Routes.FLASHCARD) {
+        composable(
+            route = Routes.FLASHCARD,
+            arguments = listOf(navArgument(Routes.ARG_DECK_ID) { type = NavType.StringType })
+        ) { backStackEntry ->
+            val deckId = backStackEntry.arguments?.getString(Routes.ARG_DECK_ID).orEmpty()
             FlashcardScreen(
+                deckId = deckId,
                 onBackToHome = { navController.popBackStack(Routes.DECKS, inclusive = false) },
                 onViewDetailClick = { navController.navigate(Routes.VOCABULARY_DETAIL) }
             )
@@ -122,12 +132,11 @@ fun AppNavHost() {
                 }
             ) { padding ->
                 ProfileScreen(
-
                     modifier = Modifier.fillMaxSize().padding(padding),
                     onLogout = {
                         authViewModel.logout()
                         navController.navigate(Routes.LOGIN) {
-                            popUpTo(navController.graph.findStartDestination().id) {
+                            popUpTo(0) {
                                 inclusive = true
                             }
                             launchSingleTop = true
@@ -138,13 +147,14 @@ fun AppNavHost() {
         }
         composable(Routes.LOGIN) {
             LoginScreen(
+                viewModel = authViewModel,
                 onLoginSuccess = { userProfile ->
                     navController.navigate(Routes.HOME) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+                        popUpTo(Routes.LOGIN) {
+                            inclusive = true
                         }
                         launchSingleTop = true
-                        restoreState = true
+                        //restoreState = true
                     }
                 },
                 onNavigateRegister = { navController.navigate(Routes.REGISTER) }
@@ -152,6 +162,7 @@ fun AppNavHost() {
         }
         composable(Routes.REGISTER) {
             RegisterScreen(
+                viewModel = authViewModel,
                 onRegisterSuccess = { userProfile ->
                     navController.navigate(Routes.SELECT_LEVEL) {
                         popUpTo(Routes.REGISTER) { inclusive = true }
@@ -229,7 +240,7 @@ private fun MainScaffold(
                 mainTitle = "MinLish",
                 subTitle = when (currentRoute) {
                     Routes.HOME -> "Home"
-                    Routes.DECKS -> "Add Decks"
+                    Routes.DECKS -> "Decks"
                     Routes.ANALYTICS -> "Analytics"
                     Routes.PROFILE -> "Profile"
                     else -> null
