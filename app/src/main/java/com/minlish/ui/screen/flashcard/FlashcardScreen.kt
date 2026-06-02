@@ -35,7 +35,7 @@ import com.minlish.ui.theme.colorPrimary
 fun FlashcardScreen(
     deckId: String,
     onBackToHome: () -> Unit = {},
-    onViewDetailClick: () -> Unit = {},
+    onViewDetailClick: (String) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: FlashcardViewModel = viewModel(
         key = deckId,
@@ -57,7 +57,11 @@ fun FlashcardScreen(
         isLoading = uiState.isLoading,
         errorMessage = uiState.errorMessage,
         onBackToHome = onBackToHome,
-        onViewDetailClick = onViewDetailClick,
+        onViewDetailClick = {
+            uiState.currentVocabulary?.word?.let { word ->
+                onViewDetailClick(word)
+            }
+        },
         onAnswerSelected = viewModel::onAnswerSelected,
         modifier = modifier
     )

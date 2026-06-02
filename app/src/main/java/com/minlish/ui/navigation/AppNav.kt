@@ -46,10 +46,12 @@ private object Routes {
     const val SELECT_LEARNING_GOAL = "selectLearningGoal"
     const val ARG_DECK_ID = "deckId"
     const val FLASHCARD = "flashcard/{$ARG_DECK_ID}"
-    const val VOCABULARY_DETAIL = "vocabulary_detail"
+    const val ARG_WORD = "word"
+    const val VOCABULARY_DETAIL = "vocabulary_detail/{$ARG_WORD}"
     const val ADD_DECK = "add_deck"
 
     fun flashcard(deckId: String): String = "flashcard/$deckId"
+    fun vocabularyDetail(word: String): String = "vocabulary_detail/$word"
 }
 
 @Composable
@@ -106,11 +108,18 @@ fun AppNavHost() {
             FlashcardScreen(
                 deckId = deckId,
                 onBackToHome = { navController.popBackStack(Routes.DECKS, inclusive = false) },
-                onViewDetailClick = { navController.navigate(Routes.VOCABULARY_DETAIL) }
+                onViewDetailClick = { word -> navController.navigate(Routes.vocabularyDetail(word)) }
             )
         }
-        composable(Routes.VOCABULARY_DETAIL) {
-            VocabularyDetailScreen("gay")
+        composable(
+            route = Routes.VOCABULARY_DETAIL,
+            arguments = listOf(navArgument(Routes.ARG_WORD) { type = NavType.StringType })
+        ) { backStackEntry ->
+            val word = backStackEntry.arguments?.getString(Routes.ARG_WORD).orEmpty()
+            VocabularyDetailScreen(
+                word = word,
+                onBackClick = { navController.popBackStack() }
+            )
         }
         composable(Routes.ANALYTICS) {
             AnalyticsScreen(
