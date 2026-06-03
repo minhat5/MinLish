@@ -41,6 +41,7 @@ import com.minlish.ui.common.viewmodel.AuthViewModelFactory
 fun LoginScreen(
     onLoginSuccess: (UserProfile) -> Unit = {},
     onNavigateRegister: () -> Unit = {},
+    onNavigateForgotPassword: () -> Unit = {},
     viewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -66,7 +67,7 @@ fun LoginScreen(
             LoginTextField(
                 uiState = uiState,
                 onLogin = { email, password -> viewModel.login(email, password) },
-                onForgotPassword = { email -> viewModel.resetPassword(email) }
+                onForgotPassword = onNavigateForgotPassword
             )
             CreateAccount(onNavigateRegister = onNavigateRegister)
         }
@@ -77,7 +78,7 @@ fun LoginScreen(
 fun LoginTextField(
     uiState: AuthUiState,
     onLogin: (String, String) -> Unit,
-    onForgotPassword: (String) -> Unit
+    onForgotPassword: () -> Unit
 ) {
     val emailState = remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf("") }
@@ -103,13 +104,7 @@ fun LoginTextField(
             isVisible = passwordVisible
         )
         TextButton(
-            onClick = {
-                val email = emailState.value.trim()
-                if (email.isBlank()) {
-                    return@TextButton
-                }
-                onForgotPassword(email)
-            },
+            onClick = onForgotPassword,
             modifier = Modifier.align(Alignment.End)
         ) {
             Text(

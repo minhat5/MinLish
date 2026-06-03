@@ -18,6 +18,7 @@ import com.minlish.ui.common.viewmodel.SetupViewModelFactory
 import com.minlish.ui.common.component.BottomNav
 import com.minlish.ui.common.component.TopBar
 import com.minlish.ui.screen.analytics.AnalyticsScreen
+import com.minlish.ui.screen.auth.ForgotPasswordScreen
 import com.minlish.ui.screen.auth.LoginScreen
 import com.minlish.ui.screen.auth.RegisterScreen
 import com.minlish.ui.screen.auth.SelectCefrLevelScreen
@@ -42,6 +43,7 @@ private object Routes {
     const val PROFILE = "profile"
     const val LOGIN = "login"
     const val REGISTER = "register"
+    const val FORGOT_PASSWORD = "forgotPassword"
     const val SELECT_LEVEL = "selectLevel"
     const val SELECT_CERTIFICATE = "selectCertificate"
     const val SELECT_LEARNING_GOAL = "selectLearningGoal"
@@ -193,7 +195,20 @@ fun AppNavHost() {
                         //restoreState = true
                     }
                 },
-                onNavigateRegister = { navController.navigate(Routes.REGISTER) }
+                onNavigateRegister = { navController.navigate(Routes.REGISTER) },
+                onNavigateForgotPassword = {
+                    authViewModel.clearMessages()
+                    navController.navigate(Routes.FORGOT_PASSWORD)
+                }
+            )
+        }
+        composable(Routes.FORGOT_PASSWORD) {
+            ForgotPasswordScreen(
+                viewModel = authViewModel,
+                onBackToLogin = {
+                    authViewModel.clearMessages()
+                    navController.popBackStack()
+                }
             )
         }
         composable(Routes.REGISTER) {
