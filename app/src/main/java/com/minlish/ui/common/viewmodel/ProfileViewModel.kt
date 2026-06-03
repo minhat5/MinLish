@@ -62,6 +62,7 @@ class ProfileViewModel(
                 StreakState.currentUserId = user.id
                 StreakState.streakCount = user.streak
                 val stats = getProfileStats(user.id)
+                StreakState.streakCount = stats.streakDays
                 _uiState.update {
                     it.copy(
                         isLoading = false,

@@ -49,6 +49,7 @@ class HomeViewModel(
                     StreakState.streakCount = user.streak
                     // Fetch dashboard metrics based on real data
                     val metrics = getDashboardMetrics.invoke(user.id)
+                    StreakState.streakCount = metrics.streakDays
                     _uiState.update {
                         it.copy(
                             isLoading = false,
