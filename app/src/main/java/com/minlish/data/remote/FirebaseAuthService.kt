@@ -109,6 +109,8 @@ class FirebaseAuthService(
                 learningGoal = userProfile.learningGoal,
                 levelEstimate = userProfile.levelEstimate,
                 cefrLevel = userProfile.cefrLevel,
+                streak = userProfile.streak,
+                lastStudyDate = userProfile.lastStudyDate,
                 createdAt = userProfile.createdAt,
                 updatedAt = userProfile.updatedAt
             )
@@ -157,6 +159,8 @@ class FirebaseAuthService(
                 learningGoal = userProfile.learningGoal,
                 levelEstimate = userProfile.levelEstimate,
                 cefrLevel = userProfile.cefrLevel,
+                streak = userProfile.streak,
+                lastStudyDate = userProfile.lastStudyDate,
                 createdAt = userProfile.createdAt,
                 updatedAt = userProfile.updatedAt
             )
