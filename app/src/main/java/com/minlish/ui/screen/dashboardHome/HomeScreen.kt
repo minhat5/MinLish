@@ -24,7 +24,10 @@ import com.minlish.ui.common.viewmodel.HomeViewModelFactory
 import com.minlish.ui.theme.*
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    onContinueLearningClick: () -> Unit = {}
+) {
     val viewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory())
     val uiState by viewModel.uiState.collectAsState()
 
@@ -77,7 +80,8 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                      tag = uiState.currentDeckTag,
                      subtitle = uiState.currentDeckSubtitle,
                      progressText = "${uiState.deckProgress}%",
-                     progress = uiState.deckProgress / 100f
+                     progress = uiState.deckProgress / 100f,
+                     onClick = onContinueLearningClick
                  )
                  StatsGrid(
                      wordsLearned = uiState.wordsLearned,
