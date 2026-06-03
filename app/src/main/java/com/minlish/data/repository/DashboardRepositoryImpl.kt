@@ -54,17 +54,25 @@ class DashboardRepositoryImpl(
 
     override suspend fun getCurrentDeck(userId: String): Deck? {
         return try {
-            // Get the first deck for the user (you can modify this logic)
+            getDecksForUser(userId).maxByOrNull { it.updatedAt }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    override suspend fun getDecksForUser(userId: String): List<Deck> {
+        return try {
             val snapshot = firebaseFirestore
                 .collection(FirebaseCollections.DECKS)
                 .whereEqualTo("ownerId", userId)
-                .limit(1)
                 .get()
                 .await()
 
-            snapshot.documents.firstOrNull()?.toObject(DeckDto::class.java)?.toDomain()
+            snapshot.documents
+                .mapNotNull { it.toObject(DeckDto::class.java)?.toDomain() }
+                .sortedByDescending { it.updatedAt }
         } catch (e: Exception) {
-            null
+            emptyList()
         }
     }
 

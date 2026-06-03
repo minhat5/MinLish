@@ -17,8 +17,6 @@ data class HomeUiState(
     val isLoading: Boolean = true,
     val errorMessage: String? = null,
     val currentUser: UserProfile? = null,
-    val dailyGoalPercent: Int = 0,
-    val timeRemaining: Int = 0,
     val wordsLearned: Int = 0,
     val weeklyProgress: Int = 0,
     val streakDays: Int = 0,
@@ -46,19 +44,15 @@ class HomeViewModel(
                 val user = getCurrentUser.invoke()
                 if (user != null) {
                     StreakState.currentUserId = user.id
-                    StreakState.streakCount = user.streak
-                    // Fetch dashboard metrics based on real data
                     val metrics = getDashboardMetrics.invoke(user.id)
-                    StreakState.streakCount = metrics.streakDays
+                    StreakState.streakCount = user.streak
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             currentUser = user,
-                            dailyGoalPercent = metrics.dailyGoalPercent,
-                            timeRemaining = metrics.timeRemaining,
                             wordsLearned = metrics.wordsLearned,
                             weeklyProgress = metrics.weeklyProgress,
-                            streakDays = metrics.streakDays,
+                            streakDays = user.streak,
                             currentDeckTag = metrics.currentDeckTag,
                             currentDeckSubtitle = metrics.currentDeckSubtitle,
                             deckProgress = metrics.deckProgress

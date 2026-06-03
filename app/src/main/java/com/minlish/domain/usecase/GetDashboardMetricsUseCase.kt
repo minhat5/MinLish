@@ -1,17 +1,12 @@
 package com.minlish.domain.usecase
 
 import com.minlish.domain.model.ProgressSnapshot
-import com.minlish.domain.model.DailyPlan
-import com.minlish.domain.model.Deck
 import com.minlish.domain.repository.DashboardRepository
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 data class DashboardMetrics(
     val wordsLearned: Int = 0,
-    val streakDays: Int = 0,
-    val dailyGoalPercent: Int = 0,
-    val timeRemaining: Int = 0,
     val weeklyProgress: Int = 0,
     val currentDeckTag: String = "Travel",
     val currentDeckSubtitle: String = "Common Verbs Deck",
@@ -24,15 +19,9 @@ class GetDashboardMetricsUseCase(
     suspend operator fun invoke(userId: String): DashboardMetrics {
         return try {
             val progressSnapshot = dashboardRepository.getProgressSnapshot(userId)
-            val dailyPlan = dashboardRepository.getDailyPlan(userId)
-            val currentDeck = dashboardRepository.getCurrentDeck(userId)
-
-            // Calculate daily goal percent
-            val dailyGoalPercent = if (progressSnapshot != null && dailyPlan != null) {
-                calculateDailyGoalPercent(progressSnapshot, dailyPlan)
-            } else {
-                0
-            }
+            val decks = dashboardRepository.getDecksForUser(userId)
+            val currentDeck = decks.maxByOrNull { it.updatedAt }
+            val wordsLearned = decks.sumOf { it.learnedWordCount }
 
             // Calculate deck progress
             val deckProgress = if (currentDeck != null) {
@@ -46,10 +35,7 @@ class GetDashboardMetricsUseCase(
             }
 
             DashboardMetrics(
-                wordsLearned = progressSnapshot?.wordsLearned ?: 0,
-                streakDays = progressSnapshot?.streakDays ?: 0,
-                dailyGoalPercent = dailyGoalPercent,
-                timeRemaining = calculateTimeRemaining(),
+                wordsLearned = wordsLearned,
                 weeklyProgress = calculateWeeklyProgress(progressSnapshot),
                 currentDeckTag = currentDeck?.tags?.firstOrNull() ?: "Travel",
                 currentDeckSubtitle = currentDeck?.title ?: "Common Verbs Deck",
@@ -57,22 +43,6 @@ class GetDashboardMetricsUseCase(
             )
         } catch (e: Exception) {
             DashboardMetrics()
-        }
-    }
-
-    private fun calculateDailyGoalPercent(
-        progressSnapshot: ProgressSnapshot,
-        dailyPlan: DailyPlan
-    ): Int {
-        // Get today's activity
-        val today = LocalDate.now().format(DateTimeFormatter.ISO_DATE)
-        val todayActivity = progressSnapshot.dailyActivities.find { it.date == today }
-
-        return if (todayActivity != null && dailyPlan.newWordsTarget > 0) {
-            val newWordsCompleted = todayActivity.newWordsLearned
-            (newWordsCompleted * 100) / dailyPlan.newWordsTarget
-        } else {
-            0
         }
     }
 
@@ -99,15 +69,6 @@ class GetDashboardMetricsUseCase(
         } else {
             0
         }
-    }
-
-    private fun calculateTimeRemaining(): Int {
-        // For now, calculate based on time remaining in the day
-        val now = java.time.LocalTime.now()
-        val endOfDay = java.time.LocalTime.of(23, 59, 59)
-        
-        val duration = java.time.Duration.between(now, endOfDay)
-        return (duration.toMinutes()).toInt()
     }
 }
 
