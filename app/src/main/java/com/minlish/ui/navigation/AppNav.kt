@@ -5,6 +5,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -71,6 +75,7 @@ fun AppNavHost() {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory())
     val setupViewModel: SetupViewModel = viewModel(factory = SetupViewModelFactory())
+    var analyticsResetKey by rememberSaveable { mutableIntStateOf(0) }
 
     // Determine start destination based on login status
     val startDestination = if (AppContainer.isLoggedInUseCase()) {
@@ -87,6 +92,7 @@ fun AppNavHost() {
             MainScaffold(
                 currentRoute = Routes.HOME,
                 onTabSelect = { route ->
+                    if (route == Routes.ANALYTICS) analyticsResetKey++
                     handleTabNavigation(route, navController, shouldGuardProfile = true)
                 }
             ) { padding ->
@@ -97,6 +103,7 @@ fun AppNavHost() {
             MainScaffold(
                 currentRoute = Routes.DECKS,
                 onTabSelect = { route ->
+                    if (route == Routes.ANALYTICS) analyticsResetKey++
                     handleTabNavigation(route, navController, shouldGuardProfile = true)
                 }
             ) { padding ->
@@ -195,11 +202,17 @@ fun AppNavHost() {
             AnalyticsScreen(
                 modifier = Modifier.fillMaxSize(),
                 selectedBottomTab = routeToTab(Routes.ANALYTICS),
+                resetProgressTabKey = analyticsResetKey,
                 onBottomTabClick = { tab ->
-                    handleTabNavigation(tabToRoute(tab), navController, shouldGuardProfile = true)
+                    val route = tabToRoute(tab)
+                    if (route == Routes.ANALYTICS) analyticsResetKey++
+                    handleTabNavigation(route, navController, shouldGuardProfile = true)
                 },
                 onProfileClick = {
                     handleTabNavigation(Routes.PROFILE, navController, shouldGuardProfile = true)
+                },
+                onStartReviewSession = {
+                    handleTabNavigation(Routes.DECKS, navController, shouldGuardProfile = true)
                 }
             )
         }
@@ -207,6 +220,7 @@ fun AppNavHost() {
             MainScaffold(
                 currentRoute = Routes.PROFILE,
                 onTabSelect = { route ->
+                    if (route == Routes.ANALYTICS) analyticsResetKey++
                     handleTabNavigation(route, navController, shouldGuardProfile = true)
                 }
             ) { padding ->

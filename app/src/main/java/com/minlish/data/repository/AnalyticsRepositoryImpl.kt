@@ -5,6 +5,7 @@ import com.minlish.data.dto.ReviewLogDto
 import com.minlish.data.mapper.toDomain
 import com.minlish.data.remote.FirebaseCollections
 import com.minlish.domain.model.ReviewLog
+import com.minlish.domain.model.UserProgress
 import com.minlish.domain.repository.AnalyticsRepository
 import kotlinx.coroutines.tasks.await
 
@@ -29,6 +30,22 @@ class AnalyticsRepositoryImpl(
                         }
                     }
                     ?.toDomain()
+            }
+    }
+
+    override suspend fun getUserProgresses(userId: String): List<UserProgress> {
+        return firebaseFirestore
+            .collection(FirebaseCollections.USERS)
+            .document(userId)
+            .collection(FirebaseCollections.PROGRESS)
+            .get()
+            .await()
+            .documents
+            .mapNotNull { document ->
+                document.toObject(UserProgress::class.java)?.let { progress ->
+                    val vocabId = progress.vocabId.ifBlank { document.id }
+                    progress.copy(vocabId = vocabId)
+                }
             }
     }
 }
