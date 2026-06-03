@@ -88,11 +88,11 @@ class AnalyticsViewModel(
         val retentionPercent = (retentionRate * 100).toInt()
         return ProgressSummaryData(
             masteredWords = masteredWordsThisWeek.toString(),
-            masteredWordsDetail = "easy this\nweek",
+            masteredWordsDetail = "mastered this\nweek",
             atRiskWords = atRiskWordsThisWeek.toString(),
-            atRiskWordsDetail = "again this\nweek",
+            atRiskWordsDetail = "at risk this\nweek",
             retentionRate = "$retentionPercent%",
-            retentionDetail = "$weeklyEasyReviews/$weeklyTotalReviews\nreviews",
+            retentionDetail = "$weeklyRememberedReviews/$weeklyTotalReviews\nreviews",
             retentionProgress = retentionRate
         )
     }
