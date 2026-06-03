@@ -5,15 +5,37 @@ import com.minlish.data.dto.ProgressSnapshotDto
 import com.minlish.domain.model.DailyActivity
 import com.minlish.core.constant.LevelEstimate
 import com.minlish.domain.model.ProgressSnapshot
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 fun ProgressSnapshotDto.toDomain(): ProgressSnapshot {
+    val domainActivities = dailyActivities.map { it.toDomain() }
+    
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    val today = dateFormat.format(Date())
+    
+    val cal = Calendar.getInstance()
+    cal.add(Calendar.DAY_OF_YEAR, -1)
+    val yesterday = dateFormat.format(cal.time)
+
+    val studiedToday = domainActivities.any { it.date == today && (it.totalAnswers > 0 || it.newWordsLearned > 0 || it.reviewsCompleted > 0) }
+    val studiedYesterday = domainActivities.any { it.date == yesterday && (it.totalAnswers > 0 || it.newWordsLearned > 0 || it.reviewsCompleted > 0) }
+
+    val validatedStreak = if (studiedToday || studiedYesterday) {
+        streakDays
+    } else {
+        0
+    }
+
     return ProgressSnapshot(
         userId = userId,
         wordsLearned = wordsLearned,
-        streakDays = streakDays,
+        streakDays = validatedStreak,
         accuracyRate = accuracyRate,
         retentionRate = retentionRate,
-        dailyActivities = dailyActivities.map { it.toDomain() },
+        dailyActivities = domainActivities,
         levelEstimate = parseEnum(levelEstimate, LevelEstimate.BEGINNER),
         updatedAt = updatedAt
     )

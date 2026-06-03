@@ -8,6 +8,7 @@ import com.minlish.domain.model.UserProfile
 
 fun AuthResponseDto.toDomain(): UserProfile {
     val parsedCefr = if (cefrLevel.isNullOrBlank()) null else parseEnum(cefrLevel, CefrLevel.A1)
+
     return UserProfile(
         id = id,
         email = email,
@@ -16,6 +17,8 @@ fun AuthResponseDto.toDomain(): UserProfile {
         learningGoal = parseEnum(learningGoal, LearningGoal.COMMUNICATION),
         levelEstimate = parseEnum(levelEstimate, LevelEstimate.BEGINNER),
         cefrLevel = parsedCefr,
+        streak = streak,
+        lastStudyDate = lastStudyDate,
         createdAt = createdAt,
         updatedAt = updatedAt
     )
@@ -30,6 +33,8 @@ fun UserProfile.toAuthResponse(): AuthResponseDto {
         learningGoal = learningGoal.name,
         levelEstimate = levelEstimate.name,
         cefrLevel = cefrLevel?.name,
+        streak = streak,
+        lastStudyDate = lastStudyDate,
         createdAt = createdAt,
         updatedAt = updatedAt
     )

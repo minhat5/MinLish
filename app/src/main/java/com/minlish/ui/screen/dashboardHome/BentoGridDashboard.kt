@@ -9,12 +9,9 @@ import com.minlish.ui.theme.colorPrimary
 
 @Composable
 fun BentoGridDashboard(
-    percent: Int = 20,
-    timeRemaining: Int = 50,
     streakDays: Int = 0
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        DailyGoalCard(percent, timeRemaining)
         StreakCard(colorPrimary, streakDays)
     }
 }

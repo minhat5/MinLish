@@ -5,10 +5,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.BusinessCenter
+import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Flight
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Public
+import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
@@ -150,10 +156,17 @@ private fun DeckScreenContent(
 
 private fun Deck.toDeckData(): DeckData {
     val icon = when (iconKey.lowercase()) {
+        "book" -> Icons.Default.Book
         "chat" -> Icons.Default.Chat
+        "home" -> Icons.Default.Home
         "school" -> Icons.Default.School
         "business", "briefcase" -> Icons.Default.BusinessCenter
+        "work" -> Icons.Default.BusinessCenter
         "travel", "flight" -> Icons.Default.Flight
+        "science" -> Icons.Default.Science
+        "restaurant" -> Icons.Default.Restaurant
+        "camera" -> Icons.Default.Camera
+        "public" -> Icons.Default.Public
         else -> Icons.Default.Star
     }
 

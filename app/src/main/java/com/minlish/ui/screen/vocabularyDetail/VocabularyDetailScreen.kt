@@ -22,12 +22,10 @@ import com.minlish.ui.common.component.PrimaryButton
 import com.minlish.ui.common.viewmodel.VocabularyViewModel
 import com.minlish.ui.theme.*
 
-
-val text = "Add to Favorites"
-
 @Composable
 fun VocabularyDetailScreen(
     word: String,
+    onBackClick: () -> Unit = {},
     viewModel: VocabularyViewModel = viewModel(
         factory = VocabularyViewModel.provideFactory(RetrofitInstance.api)
     )
@@ -78,15 +76,9 @@ fun VocabularyDetailScreen(
                     examples = exampleList
                 )
                 PrimaryButton(colorPrimary, "Add to Favorites")
-                PrimaryButton(colorPrimary, "Return to flashcard")
+                PrimaryButton(colorPrimary, "Return to flashcard", onClick = onBackClick)
 
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun rv() {
-    VocabularyDetailScreen("ebullient")
 }

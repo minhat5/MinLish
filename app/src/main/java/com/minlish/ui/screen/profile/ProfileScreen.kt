@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.minlish.ui.common.state.StreakState
 import com.minlish.ui.common.viewmodel.ProfileViewModel
 import com.minlish.ui.common.viewmodel.ProfileViewModelFactory
 import com.minlish.ui.theme.*
@@ -36,6 +38,10 @@ fun ProfileScreen(
     val stats = uiState.stats
     var darkModeEnabled by remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) {
+        viewModel.refresh()
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -50,7 +56,7 @@ fun ProfileScreen(
             level = user?.levelEstimate?.name?.toDisplayText() ?: "Beginner",
             xp = "${formatCount(stats.xp)} XP",
             achievementText = "${stats.accuracyRate.roundToInt()}% Accuracy",
-            streakText = "${stats.streakDays} Day Streak"
+            streakText = "${StreakState.streakCount} Day Streak"
         )
         Spacer(modifier = Modifier.height(24.dp))
 

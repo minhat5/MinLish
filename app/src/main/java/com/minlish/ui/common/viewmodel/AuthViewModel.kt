@@ -80,11 +80,20 @@ class AuthViewModel(
             _uiState.update { it.copy(isLoading = true, errorMessage = null, successMessage = null) }
             try {
                 resetPassword.invoke(email)
-                _uiState.update { it.copy(isLoading = false, successMessage = "Password reset email sent.") }
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        successMessage = "Password reset email sent. Please check your registered email."
+                    )
+                }
             } catch (_: AuthException.InvalidEmailException) {
                 setError("Invalid email format.")
+            } catch (_: AuthException.EmailNotRegisteredException) {
+                setError("Email is not registered.")
             } catch (e: AuthException.ResetPasswordFailedException) {
                 setError(e.message ?: "Reset password failed.")
+            } catch (e: IllegalArgumentException) {
+                setError(e.message ?: "Invalid input.")
             } catch (e: Exception) {
                 setError(e.message ?: "Reset password failed.")
             }
@@ -98,14 +107,21 @@ class AuthViewModel(
     fun logout() {
         try {
             logout.invoke()
-            _uiState.update { it.copy(currentUser = null, errorMessage = null) }
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    currentUser = null,
+                    errorMessage = null,
+                    successMessage = null
+                )
+            }
         } catch (e: Exception) {
             setError(e.message ?: "Logout failed.")
         }
     }
 
     private fun setError(message: String) {
-        _uiState.update { it.copy(isLoading = false, errorMessage = message) }
+        _uiState.update { it.copy(isLoading = false, errorMessage = message, successMessage = null) }
     }
 }
 

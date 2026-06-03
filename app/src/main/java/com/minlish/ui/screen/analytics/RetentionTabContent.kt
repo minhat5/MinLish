@@ -51,7 +51,7 @@ data class RetentionLevelData(
 fun RetentionTabContent(
     modifier: Modifier = Modifier,
     levels: List<RetentionLevelData> = defaultRetentionLevelData(),
-    wordsReadyForReview: Int = 1547,
+    wordsReadyForReview: Int = 0,
     onStartReviewSession: () -> Unit = {}
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -296,7 +296,7 @@ private fun retentionInsightText(
     topLevel: RetentionLevelData?
 ): String {
     return when {
-        topLevel == null -> "No retention data is available yet. Complete review sessions to build your memory profile."
+        topLevel == null || topLevel.count == 0 -> "No retention data is available yet. Complete review sessions to build your memory profile."
         topLevel.label.endsWith("1") -> "Most words are currently at Level 1. Focus on graduating more words to long-term memory."
         topLevel.label.endsWith("5") -> "Most words are in Level 5. Keep reviewing due words to protect long-term memory."
         else -> "Most words are currently in ${topLevel.label}. Keep reviewing consistently to move them toward Level 5."
@@ -304,11 +304,11 @@ private fun retentionInsightText(
 }
 
 fun defaultRetentionLevelData() = listOf(
-    RetentionLevelData("Level 1", count = 620, intervalRange = "I < 3 days"),
-    RetentionLevelData("Level 2", count = 180, intervalRange = "3 <= I <= 7 days"),
-    RetentionLevelData("Level 3", count = 96, intervalRange = "8 <= I <= 21 days"),
-    RetentionLevelData("Level 4", count = 132, intervalRange = "22 <= I <= 45 days"),
-    RetentionLevelData("Level 5", count = 482, intervalRange = "I > 45 days")
+    RetentionLevelData("Level 1", count = 0, intervalRange = "I < 3 days"),
+    RetentionLevelData("Level 2", count = 0, intervalRange = "3 <= I <= 7 days"),
+    RetentionLevelData("Level 3", count = 0, intervalRange = "8 <= I <= 21 days"),
+    RetentionLevelData("Level 4", count = 0, intervalRange = "22 <= I <= 45 days"),
+    RetentionLevelData("Level 5", count = 0, intervalRange = "I > 45 days")
 )
 
 @Preview(showBackground = true)

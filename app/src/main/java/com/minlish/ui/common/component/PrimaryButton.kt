@@ -32,10 +32,11 @@ import com.minlish.ui.theme.*
 @Composable
 fun PrimaryButton(
     backgroundColor: Brush,
-    text: String
+    text: String,
+    onClick: () -> Unit = {}
 ){
     Button(
-        onClick = {},
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp),
@@ -76,10 +77,12 @@ fun PrimaryButton(
 @Composable
 fun PrimaryButton(
     backgroundColor: Color,
-    text: String
+    text: String,
+    onClick: () -> Unit = {}
 ) {
     PrimaryButton(
         backgroundColor = SolidColor(backgroundColor),
-        text = text
+        text = text,
+        onClick = onClick
     )
 }

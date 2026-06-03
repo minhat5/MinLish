@@ -16,6 +16,7 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -38,9 +39,8 @@ import com.minlish.ui.theme.*
 @Composable
 fun AnalyticsScreen(
     modifier: Modifier = Modifier,
-    retentionLevels: List<RetentionLevelData> = defaultRetentionLevelData(),
-    wordsReadyForReview: Int = 1547,
     selectedBottomTab: String = "Analytics",
+    resetProgressTabKey: Int = 0,
     onBottomTabClick: (String) -> Unit = {},
     onProfileClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
@@ -48,6 +48,10 @@ fun AnalyticsScreen(
     viewModel: AnalyticsViewModel = viewModel(factory = AnalyticsViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(resetProgressTabKey) {
+        viewModel.refresh()
+    }
 
     Scaffold(
         modifier = modifier,
@@ -72,8 +76,7 @@ fun AnalyticsScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
             uiState = uiState,
-            retentionLevels = retentionLevels,
-            wordsReadyForReview = wordsReadyForReview,
+            resetProgressTabKey = resetProgressTabKey,
             onStartReviewSession = onStartReviewSession
         )
     }
@@ -83,12 +86,15 @@ fun AnalyticsScreen(
 private fun AnalyticsContent(
     modifier: Modifier = Modifier,
     uiState: AnalyticsUiState,
-    retentionLevels: List<RetentionLevelData>,
-    wordsReadyForReview: Int,
+    resetProgressTabKey: Int,
     onStartReviewSession: () -> Unit
 ) {
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
     val tabs = listOf("Progress", "Retention")
+
+    LaunchedEffect(resetProgressTabKey) {
+        selectedTabIndex = 0
+    }
 
     Column(
         modifier = modifier
@@ -140,8 +146,8 @@ private fun AnalyticsContent(
             when (selectedTabIndex) {
                 0 -> ProgressTabContent(uiState = uiState)
                 1 -> RetentionTabContent(
-                    levels = retentionLevels,
-                    wordsReadyForReview = wordsReadyForReview,
+                    levels = uiState.retentionLevels,
+                    wordsReadyForReview = uiState.wordsReadyForReview,
                     onStartReviewSession = onStartReviewSession
                 )
             }

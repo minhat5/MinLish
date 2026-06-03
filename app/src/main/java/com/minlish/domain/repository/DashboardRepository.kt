@@ -8,6 +8,7 @@ interface DashboardRepository {
     suspend fun getProgressSnapshot(userId: String): ProgressSnapshot?
     suspend fun getDailyPlan(userId: String): DailyPlan?
     suspend fun getCurrentDeck(userId: String): Deck?
+    suspend fun getDecksForUser(userId: String): List<Deck>
     suspend fun getTodayDailyActivity(userId: String): Long? // returns correctAnswers / totalAnswers * 100
 }
 

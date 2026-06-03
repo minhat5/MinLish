@@ -11,13 +11,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.minlish.ui.common.state.StreakState
 
 data class HomeUiState(
     val isLoading: Boolean = true,
     val errorMessage: String? = null,
     val currentUser: UserProfile? = null,
-    val dailyGoalPercent: Int = 0,
-    val timeRemaining: Int = 0,
     val wordsLearned: Int = 0,
     val weeklyProgress: Int = 0,
     val streakDays: Int = 0,
@@ -44,17 +43,16 @@ class HomeViewModel(
             try {
                 val user = getCurrentUser.invoke()
                 if (user != null) {
-                    // Fetch dashboard metrics based on real data
+                    StreakState.currentUserId = user.id
                     val metrics = getDashboardMetrics.invoke(user.id)
+                    StreakState.streakCount = user.streak
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             currentUser = user,
-                            dailyGoalPercent = metrics.dailyGoalPercent,
-                            timeRemaining = metrics.timeRemaining,
                             wordsLearned = metrics.wordsLearned,
                             weeklyProgress = metrics.weeklyProgress,
-                            streakDays = metrics.streakDays,
+                            streakDays = user.streak,
                             currentDeckTag = metrics.currentDeckTag,
                             currentDeckSubtitle = metrics.currentDeckSubtitle,
                             deckProgress = metrics.deckProgress
