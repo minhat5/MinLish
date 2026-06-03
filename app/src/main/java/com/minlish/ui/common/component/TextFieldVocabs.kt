@@ -26,9 +26,12 @@ import androidx.compose.ui.unit.sp
 fun TextFieldVocabs(
     label: String,
     placeholder: String,
+    value: String = "",
+    onValueChange: ((String) -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null
 ) {
-    var textValue by remember { mutableStateOf("") }
+    var textValue by remember { mutableStateOf(value) }
+    val displayedValue = if (onValueChange != null) value else textValue
 
     Column(
         modifier = Modifier
@@ -45,8 +48,14 @@ fun TextFieldVocabs(
 
         // Khối nhập thông tin
         TextField(
-            value = textValue,
-            onValueChange = { textValue = it },
+            value = displayedValue,
+            onValueChange = { newValue ->
+                if (onValueChange != null) {
+                    onValueChange(newValue)
+                } else {
+                    textValue = newValue
+                }
+            },
             placeholder = {
                 Text(text = placeholder, color = Color.Gray, fontSize = 14.sp)
             },

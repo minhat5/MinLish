@@ -27,13 +27,16 @@ import com.minlish.ui.screen.dashboardHome.HomeScreen
 import com.minlish.ui.screen.profile.ProfileScreen
 import com.minlish.ui.screen.vocabs.AddDeckScreen
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import com.minlish.ui.screen.deck.DeckScreen
+import com.minlish.ui.screen.deckDetail.DeckDetailScreen
 import com.minlish.ui.screen.flashcard.FlashcardScreen
 import com.minlish.ui.screen.vocabularyDetail.VocabularyDetailScreen
 import com.minlish.ui.screen.dailyReviewSummary.DailyReviewSummary
 import androidx.navigation.navArgument
+import com.minlish.ui.screen.vocabs.AddVocabsScreen
 
 private object Routes {
     const val HOME = "home"
@@ -46,7 +49,9 @@ private object Routes {
     const val SELECT_CERTIFICATE = "selectCertificate"
     const val SELECT_LEARNING_GOAL = "selectLearningGoal"
     const val ARG_DECK_ID = "deckId"
+    const val DECK_DETAIL = "deck_detail/{$ARG_DECK_ID}"
     const val FLASHCARD = "flashcard/{$ARG_DECK_ID}"
+    const val ADD_VOCAB = "add_vocab/{$ARG_DECK_ID}"
     const val ARG_WORD = "word"
     const val VOCABULARY_DETAIL = "vocabulary_detail/{$ARG_WORD}"
     const val ARG_WORDS_COUNT = "wordsCount"
@@ -55,6 +60,8 @@ private object Routes {
     const val ADD_DECK = "add_deck"
 
     fun flashcard(deckId: String): String = "flashcard/$deckId"
+    fun deckDetail(deckId: String): String = "deck_detail/$deckId"
+    fun addVocab(deckId: String): String = "add_vocab/$deckId"
     fun vocabularyDetail(word: String): String = "vocabulary_detail/$word"
     fun dailyReviewSummary(wordsCount: Int, accuracy: Int): String = "daily_review_summary/$wordsCount/$accuracy"
 }
@@ -99,11 +106,47 @@ fun AppNavHost() {
                     onAddDeckClick = {
                     navController.navigate(Routes.ADD_DECK)
                 },
-                onDeckSelect = { deckId -> navController.navigate(Routes.flashcard(deckId)) })
+                onDeckSelect = { deckId -> navController.navigate(Routes.deckDetail(deckId)) })
             }
         }
         composable(Routes.ADD_DECK) {
-            AddDeckScreen()
+            AddDeckScreen(
+                onDeckCreated = {
+                    navController.navigate(Routes.DECKS) {
+                        popUpTo(Routes.DECKS) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(
+            route = Routes.DECK_DETAIL,
+            arguments = listOf(navArgument(Routes.ARG_DECK_ID) { type = NavType.StringType })
+        ) { backStackEntry ->
+            val deckId = backStackEntry.arguments?.getString(Routes.ARG_DECK_ID).orEmpty()
+            DeckDetailScreen(
+                deckId = deckId,
+                onStartLearning = { selectedDeckId -> navController.navigate(Routes.flashcard(selectedDeckId)) },
+                onAddWord = { selectedDeckId -> navController.navigate(Routes.addVocab(selectedDeckId)) },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(
+            route = Routes.ADD_VOCAB,
+            arguments = listOf(navArgument(Routes.ARG_DECK_ID) { type = NavType.StringType })
+        ) { backStackEntry ->
+            val deckId = backStackEntry.arguments?.getString(Routes.ARG_DECK_ID).orEmpty()
+            AddVocabsScreen(
+                deckId = deckId,
+                onWordAdded = {
+                    navController.navigate(Routes.deckDetail(deckId)) {
+                        popUpTo(Routes.deckDetail(deckId)) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+                onBackClick = { navController.popBackStack() }
+            )
         }
         composable(
             route = Routes.FLASHCARD,
@@ -283,7 +326,8 @@ private fun MainScaffold(
                 },
                 onProfileClick = {
                     onTabSelect(Routes.PROFILE)
-                }
+                },
+                bottomPadding = if (currentRoute == Routes.DECKS) 4.dp else 16.dp
             )
         },
         bottomBar = {
