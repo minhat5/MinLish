@@ -9,6 +9,7 @@ import com.minlish.domain.usecase.AnalyticsMetrics
 import com.minlish.ui.common.component.MonthlyConsistencyCalendarEntry
 import com.minlish.ui.common.component.WeeklyConsistencyChartEntry
 import com.minlish.ui.screen.analytics.ProgressSummaryData
+import com.minlish.ui.screen.analytics.RetentionLevelData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +23,9 @@ data class AnalyticsUiState(
     val weeklyEntries: List<WeeklyConsistencyChartEntry> = emptyList(),
     val monthlyEntries: List<MonthlyConsistencyCalendarEntry> = emptyList(),
     val firstMonthDayOffset: Int = 0,
-    val hasStudiedToday: Boolean = false
+    val hasStudiedToday: Boolean = false,
+    val retentionLevels: List<RetentionLevelData> = emptyList(),
+    val wordsReadyForReview: Int = 0
 )
 
 class AnalyticsViewModel(
@@ -65,7 +68,9 @@ class AnalyticsViewModel(
                         weeklyEntries = metrics.toWeeklyEntries(),
                         monthlyEntries = metrics.toMonthlyEntries(),
                         firstMonthDayOffset = metrics.firstMonthDayOffset,
-                        hasStudiedToday = metrics.hasStudiedToday
+                        hasStudiedToday = metrics.hasStudiedToday,
+                        retentionLevels = metrics.toRetentionLevelData(),
+                        wordsReadyForReview = metrics.wordsReadyForReview
                     )
                 }
             } catch (e: Exception) {
@@ -109,6 +114,16 @@ class AnalyticsViewModel(
                 dayOfMonth = day.dayOfMonth,
                 hasStudied = day.hasStudied,
                 isToday = day.isToday
+            )
+        }
+    }
+
+    private fun AnalyticsMetrics.toRetentionLevelData(): List<RetentionLevelData> {
+        return retentionLevels.map { level ->
+            RetentionLevelData(
+                label = level.label,
+                count = level.count,
+                intervalRange = level.intervalRange
             )
         }
     }

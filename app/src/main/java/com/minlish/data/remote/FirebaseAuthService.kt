@@ -197,10 +197,22 @@ class FirebaseAuthService(
      */
     suspend fun resetPassword(email: String) {
         try {
+            val registeredUser = firestore.collection(FirebaseCollections.USERS)
+                .whereEqualTo("email", email)
+                .limit(1)
+                .get()
+                .await()
+
+            if (registeredUser.isEmpty) {
+                throw AuthException.EmailNotRegisteredException(email)
+            }
+
             auth.sendPasswordResetEmail(email).await()
         } catch (e: FirebaseAuthInvalidCredentialsException) {
             Log.e(TAG, "Reset password failed - invalid email: ${e.message}")
             throw AuthException.InvalidEmailException(email)
+        } catch (e: AuthException) {
+            throw e
         } catch (e: Exception) {
             Log.e(TAG, "Reset password failed: ${e.message}")
             throw AuthException.ResetPasswordFailedException(e.message ?: "Unknown error")

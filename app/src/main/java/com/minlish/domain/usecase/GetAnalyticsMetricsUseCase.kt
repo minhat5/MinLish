@@ -2,6 +2,7 @@ package com.minlish.domain.usecase
 
 import com.minlish.core.constant.SrsRating
 import com.minlish.domain.model.ReviewLog
+import com.minlish.domain.model.UserProgress
 import com.minlish.domain.repository.AnalyticsRepository
 import java.time.DayOfWeek
 import java.time.Instant
@@ -18,7 +19,15 @@ data class AnalyticsMetrics(
     val hasStudiedToday: Boolean = false,
     val weeklyStudyDays: List<WeeklyStudyDayMetric> = emptyList(),
     val monthlyStudyDays: List<MonthlyStudyDayMetric> = emptyList(),
-    val firstMonthDayOffset: Int = 0
+    val firstMonthDayOffset: Int = 0,
+    val retentionLevels: List<RetentionLevelMetric> = emptyList(),
+    val wordsReadyForReview: Int = 0
+)
+
+data class RetentionLevelMetric(
+    val label: String,
+    val count: Int,
+    val intervalRange: String
 )
 
 data class WeeklyStudyDayMetric(
@@ -47,6 +56,8 @@ class GetAnalyticsMetricsUseCase(
         val monthEnd = monthStart.plusMonths(1)
 
         val reviewLogs = analyticsRepository.getReviewLogs(userId)
+        val userProgresses = analyticsRepository.getUserProgresses(userId)
+        val now = System.currentTimeMillis()
         val logsByDate = reviewLogs
             .mapNotNull { log -> log.reviewDate(zone)?.let { date -> log to date } }
 
@@ -79,7 +90,43 @@ class GetAnalyticsMetricsUseCase(
                 today = today,
                 studiedDates = logsByDate.map { (_, date) -> date }.toSet()
             ),
-            firstMonthDayOffset = monthStart.mondayFirstDayOffset()
+            firstMonthDayOffset = monthStart.mondayFirstDayOffset(),
+            retentionLevels = buildRetentionLevels(userProgresses),
+            wordsReadyForReview = userProgresses.count { progress ->
+                progress.nextReviewDate <= now
+            }
+        )
+    }
+
+    private fun buildRetentionLevels(
+        progresses: List<UserProgress>
+    ): List<RetentionLevelMetric> {
+        return listOf(
+            RetentionLevelMetric(
+                label = "Level 1",
+                count = progresses.count { it.interval < 3 },
+                intervalRange = "I < 3 days"
+            ),
+            RetentionLevelMetric(
+                label = "Level 2",
+                count = progresses.count { it.interval in 3..7 },
+                intervalRange = "3 <= I <= 7 days"
+            ),
+            RetentionLevelMetric(
+                label = "Level 3",
+                count = progresses.count { it.interval in 8..21 },
+                intervalRange = "8 <= I <= 21 days"
+            ),
+            RetentionLevelMetric(
+                label = "Level 4",
+                count = progresses.count { it.interval in 22..45 },
+                intervalRange = "22 <= I <= 45 days"
+            ),
+            RetentionLevelMetric(
+                label = "Level 5",
+                count = progresses.count { it.interval > 45 },
+                intervalRange = "I > 45 days"
+            )
         )
     }
 

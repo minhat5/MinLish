@@ -25,25 +25,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun AddToDeckButton() {
+fun AddToDeckButton(
+    text: String = "Add to Deck",
+    enabled: Boolean = true,
+    onClick: () -> Unit = {}
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp, vertical = 32.dp)
             .height(56.dp)
-            .clip(RoundedCornerShape(28.dp)) // Bo tròn 2 đầu
+            .clip(RoundedCornerShape(28.dp))
             .background(
-                brush = Brush.horizontalGradient( // Đổ dải màu từ trái sang phải
-                    colors = listOf(Color(0xFF6C63FF), Color(0xFFFF7043)) // Tím -> Cam
+                brush = Brush.horizontalGradient(
+                    colors = listOf(Color(0xFF6C63FF), Color(0xFFFF7043))
                 )
             )
-            .clickable { /* Xử lý sự kiện lưu vào Deck */ },
+            .clickable(enabled = enabled) { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Add to Deck", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(text, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
             Spacer(modifier = Modifier.width(8.dp))
-
             Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Color.White)
         }
     }

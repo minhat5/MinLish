@@ -30,27 +30,47 @@ import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.minlish.ui.common.component.AddToDeckButton
 import com.minlish.ui.common.component.FormCard
 import com.minlish.ui.common.component.TextFieldVocabs
+import com.minlish.ui.common.component.TopBar
+import com.minlish.ui.common.viewmodel.DeckViewModel
+import com.minlish.ui.common.viewmodel.DeckViewModelFactory
+
+private data class DeckIconOption(
+    val key: String,
+    val icon: ImageVector
+)
 
 @Composable
 fun AddDeckScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDeckCreated: () -> Unit = {},
+    onBackClick: () -> Unit = {},
+    viewModel: DeckViewModel = viewModel(factory = DeckViewModelFactory())
 ) {
     val scrollState = rememberScrollState()
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState.createSuccess) {
+        if (uiState.createSuccess) {
+            viewModel.clearCreateSuccess()
+            onDeckCreated()
+        }
+    }
 
     Column(
         modifier = modifier
@@ -58,33 +78,69 @@ fun AddDeckScreen(
             .verticalScroll(scrollState)
             .padding(vertical = 16.dp)
     ) {
+        TopBar(
+            mainTitle = "MINLISH",
+            subTitle = "Create Deck",
+            showCloseButton = true,
+            onCloseClick = onBackClick
+        )
         FormCard(
             title = "Create New Deck",
             icon = Icons.Default.Edit
         ) {
-            TextFieldVocabs(label = "Deck Title", placeholder = "e.g. Business")
-            TextFieldVocabs(label = "Description", placeholder = "Briefly describe what's in this deck...")
+            TextFieldVocabs(
+                label = "Deck Title",
+                placeholder = "e.g. Business",
+                value = uiState.deckTitle,
+                onValueChange = viewModel::onDeckTitleChange
+            )
+            TextFieldVocabs(
+                label = "Description",
+                placeholder = "Briefly describe what's in this deck...",
+                value = uiState.deckDescription,
+                onValueChange = viewModel::onDeckDescriptionChange
+            )
         }
         Spacer(modifier = Modifier.height(32.dp))
-        IconSelectionSection()
-        ThemeColorSection()
-        AddToDeckButton()
+        IconSelectionSection(
+            selectedIconKey = uiState.selectedIconKey,
+            onIconSelected = viewModel::onDeckIconSelected
+        )
+        ThemeColorSection(
+            selectedColorHex = uiState.selectedThemeColorHex,
+            onColorSelected = viewModel::onThemeColorSelected
+        )
+        uiState.errorMessage?.let { message ->
+            Text(
+                text = message,
+                color = Color(0xFFC62828),
+                fontSize = 14.sp,
+                modifier = Modifier.padding(horizontal = 24.dp)
+            )
+        }
+        AddToDeckButton(
+            text = if (uiState.isSubmitting) "Creating..." else "Create Deck",
+            enabled = !uiState.isSubmitting,
+            onClick = viewModel::createDeck
+        )
     }
 }
 
 @Composable
-fun IconSelectionSection() {
+fun IconSelectionSection(
+    selectedIconKey: String,
+    onIconSelected: (String) -> Unit
+) {
     val icons = listOf(
-        Icons.Default.Book,
-        Icons.Default.Home,
-        Icons.Default.Flight,
-        Icons.Default.Science,
-        Icons.Default.Restaurant,
-        Icons.Default.Camera,
-        Icons.Default.Work,
-        Icons.Default.Public
+        DeckIconOption("book", Icons.Default.Book),
+        DeckIconOption("home", Icons.Default.Home),
+        DeckIconOption("flight", Icons.Default.Flight),
+        DeckIconOption("science", Icons.Default.Science),
+        DeckIconOption("restaurant", Icons.Default.Restaurant),
+        DeckIconOption("camera", Icons.Default.Camera),
+        DeckIconOption("work", Icons.Default.Work),
+        DeckIconOption("public", Icons.Default.Public)
     )
-    var selectedIndex by remember { mutableIntStateOf(0) }
 
     Column(
         modifier = Modifier.padding(horizontal = 24.dp)
@@ -104,27 +160,26 @@ fun IconSelectionSection() {
                 .padding(16.dp)
         ) {
             Column {
-                icons.chunked(4).forEachIndexed { rowIndex, rowIcons ->
+                icons.chunked(4).forEach { rowIcons ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        rowIcons.forEachIndexed { colIndex, icon ->
-                            val actualIndex = rowIndex * 4 + colIndex
-                            val isSelected = actualIndex == selectedIndex
+                        rowIcons.forEach { option ->
+                            val isSelected = option.key == selectedIconKey
 
                             Box(
                                 modifier = Modifier
                                     .size(48.dp)
                                     .clip(RoundedCornerShape(12.dp))
                                     .background(if (isSelected) Color(0xFF6C63FF) else Color.Transparent)
-                                    .clickable { selectedIndex = actualIndex },
+                                    .clickable { onIconSelected(option.key) },
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    imageVector = icon,
+                                    imageVector = option.icon,
                                     contentDescription = null,
                                     tint = if (isSelected) Color.White else Color(0xFF4A6572)
                                 )
@@ -138,15 +193,17 @@ fun IconSelectionSection() {
 }
 
 @Composable
-fun ThemeColorSection() {
+fun ThemeColorSection(
+    selectedColorHex: String,
+    onColorSelected: (String) -> Unit
+) {
     val colors = listOf(
-        Color(0xFFE8E0F0),
-        Color(0xFFF3E5F5),
-        Color(0xFFFFEFEA),
-        Color(0xFFF0E68C),
-        Color(0xFFE0E0E0)
+        "#E8E0F0" to Color(0xFFE8E0F0),
+        "#F3E5F5" to Color(0xFFF3E5F5),
+        "#FFEFEA" to Color(0xFFFFEFEA),
+        "#F0E68C" to Color(0xFFF0E68C),
+        "#E0E0E0" to Color(0xFFE0E0E0)
     )
-    var selectedColorIndex by remember { mutableIntStateOf(0) }
 
     Column(
         modifier = Modifier
@@ -172,8 +229,8 @@ fun ThemeColorSection() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                colors.forEachIndexed { index, color ->
-                    val isSelected = index == selectedColorIndex
+                colors.forEach { (hex, color) ->
+                    val isSelected = hex == selectedColorHex
                     Box(
                         modifier = Modifier
                             .size(40.dp)
@@ -184,7 +241,7 @@ fun ThemeColorSection() {
                                 color = if (isSelected) Color(0xFF311B92) else Color.Transparent,
                                 shape = CircleShape
                             )
-                            .clickable { selectedColorIndex = index }
+                            .clickable { onColorSelected(hex) }
                     )
                 }
             }

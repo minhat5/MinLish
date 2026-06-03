@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.minlish.ui.common.state.StreakState
 import com.minlish.ui.common.viewmodel.ProfileViewModel
 import com.minlish.ui.common.viewmodel.ProfileViewModelFactory
 import com.minlish.ui.theme.*
@@ -50,7 +51,7 @@ fun ProfileScreen(
             level = user?.levelEstimate?.name?.toDisplayText() ?: "Beginner",
             xp = "${formatCount(stats.xp)} XP",
             achievementText = "${stats.accuracyRate.roundToInt()}% Accuracy",
-            streakText = "${stats.streakDays} Day Streak"
+            streakText = "${StreakState.streakCount} Day Streak"
         )
         Spacer(modifier = Modifier.height(24.dp))
 

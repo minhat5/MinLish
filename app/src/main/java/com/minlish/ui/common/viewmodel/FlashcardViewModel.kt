@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import com.minlish.ui.common.state.StreakState
 
 data class FlashcardUiState(
     val isLoading: Boolean = false,
@@ -25,7 +26,9 @@ data class FlashcardUiState(
     val totalCount: Int = 0,
     val isSubmitting: Boolean = false,
     val isCompleted: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val wordsCount: Int = 0,
+    val accuracy: Int = 0
 )
 
 class FlashcardViewModel(
@@ -39,8 +42,19 @@ class FlashcardViewModel(
     private var baseProgressMap: Map<String, UserProgress> = emptyMap()
     private val pendingProgressMap = linkedMapOf<String, UserProgress>()
     private var totalVocabularyCount: Int = 0
+    private var initialQueueSize: Int = 0
+    private var easySelectedCount: Int = 0
+
+    val calculateAccuracy: (Int, Int) -> Int = { easyCount, totalCount ->
+        if (totalCount > 0) {
+            ((easyCount.toDouble() / totalCount) * 100).toInt()
+        } else {
+            0
+        }
+    }
 
     init {
+        StreakState.currentUserId = userId
         loadSessionQueue()
     }
 
@@ -54,6 +68,8 @@ class FlashcardViewModel(
 
                 baseProgressMap = progressMap
                 totalVocabularyCount = vocabularies.size
+                initialQueueSize = queue.size
+                easySelectedCount = 0
 
                 _uiState.update {
                     it.copy(
@@ -81,6 +97,10 @@ class FlashcardViewModel(
         if (_uiState.value.isSubmitting) return
 
         val vocabulary = _uiState.value.currentVocabulary ?: return
+        if (quality == 5) {
+            easySelectedCount++
+        }
+
         val vocabId = vocabulary.toVocabId()
         val oldProgress = pendingProgressMap[vocabId] ?: baseProgressMap[vocabId]
         val sm2Result = Sm2Scheduler.calculate(
@@ -129,17 +149,20 @@ class FlashcardViewModel(
                     else -> DeckStatus.NEW.name
                 }
 
-                repository.updateSessionProgress(
+                val updatedStreak = repository.updateSessionProgress(
                     userId = userId,
                     deckId = deckId,
                     progresses = pendingProgressMap.values.toList(),
                     learnedWordCount = learnedWordCount,
                     totalWordCount = totalVocabularyCount,
                     deckStatus = deckStatus
-                ).await()
+                )
+                StreakState.streakCount = updatedStreak
 
                 baseProgressMap = mergedProgress
                 pendingProgressMap.clear()
+
+                val accuracy = calculateAccuracy(easySelectedCount, initialQueueSize)
 
                 _uiState.update {
                     it.copy(
@@ -148,7 +171,9 @@ class FlashcardViewModel(
                         currentIndex = 0,
                         isSubmitting = false,
                         isCompleted = true,
-                        errorMessage = null
+                        errorMessage = null,
+                        wordsCount = initialQueueSize,
+                        accuracy = accuracy
                     )
                 }
             } catch (e: Exception) {
