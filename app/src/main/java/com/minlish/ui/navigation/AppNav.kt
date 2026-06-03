@@ -98,7 +98,12 @@ fun AppNavHost() {
                     handleTabNavigation(route, navController, shouldGuardProfile = true)
                 }
             ) { padding ->
-                HomeScreen(modifier = Modifier.fillMaxSize().padding(padding))
+                HomeScreen(
+                    modifier = Modifier.fillMaxSize().padding(padding),
+                    onContinueLearningClick = {
+                        handleTabNavigation(Routes.DECKS, navController, shouldGuardProfile = true)
+                    }
+                )
             }
         }
         composable(Routes.DECKS) {

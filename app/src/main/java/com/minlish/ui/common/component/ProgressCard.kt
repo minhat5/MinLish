@@ -1,6 +1,7 @@
 package com.minlish.ui.common.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -23,13 +24,15 @@ fun ProgressCard(
     tag: String? = null,
     trailingText: String? = null,
     progress: Float,
-    progressText: String? = null
+    progressText: String? = null,
+    onClick: (() -> Unit)? = null
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
             .shadow(elevation = 4.dp, shape = RoundedCornerShape(16.dp))
             .background(colorSurface, RoundedCornerShape(16.dp))
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(24.dp)
     ) {
         Row(
