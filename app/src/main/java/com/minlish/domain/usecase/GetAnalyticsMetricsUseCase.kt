@@ -1,6 +1,7 @@
 package com.minlish.domain.usecase
 
 import com.minlish.core.constant.SrsRating
+import com.minlish.domain.model.DailyActivity
 import com.minlish.domain.model.ReviewLog
 import com.minlish.domain.model.UserProgress
 import com.minlish.domain.repository.AnalyticsRepository
@@ -13,7 +14,7 @@ import java.time.temporal.TemporalAdjusters
 data class AnalyticsMetrics(
     val masteredWordsThisWeek: Int = 0,
     val atRiskWordsThisWeek: Int = 0,
-    val weeklyEasyReviews: Int = 0,
+    val weeklyRememberedReviews: Int = 0,
     val weeklyTotalReviews: Int = 0,
     val retentionRate: Float = 0f,
     val hasStudiedToday: Boolean = false,
@@ -55,26 +56,38 @@ class GetAnalyticsMetricsUseCase(
         val monthStart = today.withDayOfMonth(1)
         val monthEnd = monthStart.plusMonths(1)
 
+        val dailyActivities = analyticsRepository.getDailyActivities(userId)
         val reviewLogs = analyticsRepository.getReviewLogs(userId)
         val userProgresses = analyticsRepository.getUserProgresses(userId)
         val now = System.currentTimeMillis()
         val logsByDate = reviewLogs
             .mapNotNull { log -> log.reviewDate(zone)?.let { date -> log to date } }
+        val activitiesByDate = dailyActivities
+            .mapNotNull { activity -> activity.activityDate()?.let { date -> activity to date } }
+        val studiedDates = logsByDate.map { (_, date) -> date }.toSet() +
+            activitiesByDate
+                .filter { (activity, _) -> activity.hasStudyActivity() }
+                .map { (_, date) -> date }
 
         val weeklyLogs = logsByDate
             .filter { (_, date) -> date >= weekStart && date < weekEnd }
             .map { (log, _) -> log }
-        val weeklyEasyReviews = weeklyLogs.count { it.rating == SrsRating.EASY }
-        val weeklyTotalReviews = weeklyLogs.size
-        val hasStudiedToday = logsByDate.any { (_, date) -> date == today }
+        val weeklyActivities = activitiesByDate
+            .filter { (_, date) -> date >= weekStart && date < weekEnd }
+            .map { (activity, _) -> activity }
+        val weeklyTotalReviews = weeklyLogs.totalReviewsOrFallback(weeklyActivities)
+        val weeklyRememberedReviews = weeklyLogs.rememberedReviewsOrFallback(weeklyActivities)
+        val masteredWordsThisWeek = weeklyLogs.countNewlyMasteredWordsOrFallback(userProgresses)
+        val atRiskWordsThisWeek = weeklyLogs.countAtRiskWordsOrFallback(userProgresses)
+        val hasStudiedToday = today in studiedDates
 
         return AnalyticsMetrics(
-            masteredWordsThisWeek = weeklyEasyReviews,
-            atRiskWordsThisWeek = weeklyLogs.count { it.rating == SrsRating.AGAIN },
-            weeklyEasyReviews = weeklyEasyReviews,
+            masteredWordsThisWeek = masteredWordsThisWeek,
+            atRiskWordsThisWeek = atRiskWordsThisWeek,
+            weeklyRememberedReviews = weeklyRememberedReviews,
             weeklyTotalReviews = weeklyTotalReviews,
             retentionRate = if (weeklyTotalReviews > 0) {
-                weeklyEasyReviews / weeklyTotalReviews.toFloat()
+                weeklyRememberedReviews / weeklyTotalReviews.toFloat()
             } else {
                 0f
             },
@@ -82,18 +95,18 @@ class GetAnalyticsMetricsUseCase(
             weeklyStudyDays = buildWeeklyStudyDays(
                 weekStart = weekStart,
                 today = today,
-                studiedDates = logsByDate.map { (_, date) -> date }.toSet()
+                studiedDates = studiedDates
             ),
             monthlyStudyDays = buildMonthlyStudyDays(
                 monthStart = monthStart,
                 monthEnd = monthEnd,
                 today = today,
-                studiedDates = logsByDate.map { (_, date) -> date }.toSet()
+                studiedDates = studiedDates
             ),
             firstMonthDayOffset = monthStart.mondayFirstDayOffset(),
             retentionLevels = buildRetentionLevels(userProgresses),
             wordsReadyForReview = userProgresses.count { progress ->
-                progress.nextReviewDate <= now
+                progress.nextReviewDate.toEpochMillisOrNull()?.let { it <= now } == true
             }
         )
     }
@@ -101,30 +114,34 @@ class GetAnalyticsMetricsUseCase(
     private fun buildRetentionLevels(
         progresses: List<UserProgress>
     ): List<RetentionLevelMetric> {
+        val reviewedProgresses = progresses.filter { progress ->
+            progress.repetition > 0 || progress.interval > 0 || progress.lastRating.isNotBlank()
+        }
+
         return listOf(
             RetentionLevelMetric(
                 label = "Level 1",
-                count = progresses.count { it.interval < 3 },
+                count = reviewedProgresses.count { it.interval < 3 },
                 intervalRange = "I < 3 days"
             ),
             RetentionLevelMetric(
                 label = "Level 2",
-                count = progresses.count { it.interval in 3..7 },
+                count = reviewedProgresses.count { it.interval in 3..7 },
                 intervalRange = "3 <= I <= 7 days"
             ),
             RetentionLevelMetric(
                 label = "Level 3",
-                count = progresses.count { it.interval in 8..21 },
+                count = reviewedProgresses.count { it.interval in 8..21 },
                 intervalRange = "8 <= I <= 21 days"
             ),
             RetentionLevelMetric(
                 label = "Level 4",
-                count = progresses.count { it.interval in 22..45 },
+                count = reviewedProgresses.count { it.interval in 22..45 },
                 intervalRange = "22 <= I <= 45 days"
             ),
             RetentionLevelMetric(
                 label = "Level 5",
-                count = progresses.count { it.interval > 45 },
+                count = reviewedProgresses.count { it.interval > 45 },
                 intervalRange = "I > 45 days"
             )
         )
@@ -163,14 +180,80 @@ class GetAnalyticsMetricsUseCase(
     }
 
     private fun ReviewLog.reviewDate(zone: ZoneId): LocalDate? {
-        if (reviewedAt <= 0L) return null
-
-        val epochMillis = if (reviewedAt < EPOCH_MILLIS_THRESHOLD) {
-            reviewedAt * MILLIS_PER_SECOND
-        } else {
-            reviewedAt
-        }
+        val epochMillis = reviewedAt.toEpochMillisOrNull() ?: return null
         return Instant.ofEpochMilli(epochMillis).atZone(zone).toLocalDate()
+    }
+
+    private fun DailyActivity.activityDate(): LocalDate? {
+        return runCatching { LocalDate.parse(date) }.getOrNull()
+    }
+
+    private fun DailyActivity.hasStudyActivity(): Boolean {
+        return newWordsLearned > 0 || reviewsCompleted > 0 || totalAnswers > 0
+    }
+
+    private fun Long.toEpochMillisOrNull(): Long? {
+        if (this <= 0L) return null
+        return if (this < EPOCH_MILLIS_THRESHOLD) {
+            this * MILLIS_PER_SECOND
+        } else {
+            this
+        }
+    }
+
+    private fun SrsRating.isRemembered(): Boolean {
+//        return this != SrsRating.AGAIN
+        return this == SrsRating.EASY
+    }
+
+    private fun List<ReviewLog>.totalReviewsOrFallback(
+        weeklyActivities: List<DailyActivity>
+    ): Int {
+        if (isNotEmpty()) return size
+
+        return weeklyActivities.sumOf { activity ->
+            activity.totalAnswers.coerceAtLeast(activity.reviewsCompleted)
+        }
+    }
+
+    private fun List<ReviewLog>.rememberedReviewsOrFallback(
+        weeklyActivities: List<DailyActivity>
+    ): Int {
+        if (isNotEmpty()) return count { it.rating.isRemembered() }
+
+        return weeklyActivities.sumOf { activity ->
+            activity.correctAnswers.coerceIn(0, activity.totalAnswers.coerceAtLeast(activity.reviewsCompleted))
+        }
+    }
+
+    private fun List<ReviewLog>.countNewlyMasteredWordsOrFallback(
+        progresses: List<UserProgress>
+    ): Int {
+        if (isEmpty()) {
+            return progresses.count { it.repetition > 0 }
+        }
+
+        return filter { log ->
+            log.rating.isRemembered() &&
+                log.previousIntervalDays < MASTERED_INTERVAL_DAYS &&
+                log.nextIntervalDays >= MASTERED_INTERVAL_DAYS
+        }
+            .map { it.wordId }
+            .distinct()
+            .size
+    }
+
+    private fun List<ReviewLog>.countAtRiskWordsOrFallback(
+        progresses: List<UserProgress>
+    ): Int {
+        if (isEmpty()) {
+            return progresses.count { it.lastRating == SrsRating.AGAIN.name }
+        }
+
+        return filter { it.rating == SrsRating.AGAIN }
+            .map { it.wordId }
+            .distinct()
+            .size
     }
 
     private fun LocalDate.mondayFirstDayOffset(): Int {
@@ -181,5 +264,6 @@ class GetAnalyticsMetricsUseCase(
         const val DAYS_IN_WEEK = 7
         const val MILLIS_PER_SECOND = 1000L
         const val EPOCH_MILLIS_THRESHOLD = 100_000_000_000L
+        const val MASTERED_INTERVAL_DAYS = 21
     }
 }

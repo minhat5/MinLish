@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -83,27 +82,13 @@ private fun DeckScreenContent(
     onAddDeckClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(
+    Box(
         modifier = modifier
-            .fillMaxSize(),
-        containerColor = Color(0xFFF9F9FF),
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = onAddDeckClick,
-                containerColor = colorPrimary,
-                contentColor = Color.White
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add Deck"
-                )
-            }
-        }
-    ) { paddingValues ->
+            .fillMaxSize()
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
                 .padding(horizontal = 16.dp)
         ) {
             when {
@@ -151,6 +136,23 @@ private fun DeckScreenContent(
                 }
             }
         }
+
+        Box(
+            modifier = Modifier
+                .align(androidx.compose.ui.Alignment.BottomEnd)
+                .padding(end = 16.dp, bottom = 16.dp)
+        ) {
+            FloatingActionButton(
+                onClick = onAddDeckClick,
+                containerColor = colorPrimary,
+                contentColor = Color.White
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Deck"
+                )
+            }
+        }
     }
 }
 
@@ -170,14 +172,16 @@ private fun Deck.toDeckData(): DeckData {
         else -> Icons.Default.Star
     }
 
-    val baseColor = themeColorHex.toColorOrNull() ?: Color(0xFF1565C0)
+    val iconTint = themeColorHex.toIconTint()
+    val iconBgColor = themeColorHex.toColorOrNull() ?: iconTint.copy(alpha = 0.12f)
+
     return DeckData(
         id = id,
         title = title,
         description = description,
         icon = icon,
-        iconTint = baseColor,
-        iconBgColor = baseColor.copy(alpha = 0.12f),
+        iconTint = iconTint,
+        iconBgColor = iconBgColor,
         learnedWords = learnedWordCount,
         totalWords = totalWordCount,
         status = status.name
@@ -186,6 +190,17 @@ private fun Deck.toDeckData(): DeckData {
 
 private fun String.toColorOrNull(): Color? {
     return runCatching { Color(android.graphics.Color.parseColor(this)) }.getOrNull()
+}
+
+private fun String.toIconTint(): Color {
+    return when (uppercase()) {
+        "#E8E0F0" -> Color(0xFF6C63FF)
+        "#F3E5F5" -> Color(0xFF8E24AA)
+        "#FFEFEA" -> Color(0xFFE85D3F)
+        "#F0E68C" -> Color(0xFF8A6D00)
+        "#E0E0E0" -> Color(0xFF4A6572)
+        else -> toColorOrNull() ?: Color(0xFF1565C0)
+    }
 }
 
 @Preview(showBackground = true)

@@ -3,7 +3,10 @@ package com.minlish.data.remote
 import com.google.firebase.firestore.FirebaseFirestore
 import com.minlish.core.constant.DeckStatus
 import com.minlish.core.constant.SrsRating
+import com.minlish.data.dto.DeckDto
 import com.minlish.data.dto.ProgressSnapshotDto
+import com.minlish.data.mapper.toDomain
+import com.minlish.domain.model.Deck
 import kotlinx.coroutines.tasks.await
 
 class FirebaseProfileService(
@@ -42,6 +45,20 @@ class FirebaseProfileService(
             .get()
             .await()
             .size()
+    }
+
+    suspend fun getDecksForUser(userId: String): List<Deck> {
+        return firestore.collection(FirebaseCollections.DECKS)
+            .whereEqualTo("ownerId", userId)
+            .get()
+            .await()
+            .documents
+            .mapNotNull { document ->
+                document.toObject(DeckDto::class.java)?.let { dto ->
+                    val deckId = dto.id.ifBlank { document.id }
+                    dto.copy(id = deckId).toDomain()
+                }
+            }
     }
 
     suspend fun getReviewStats(userId: String): ReviewStatsDto {
