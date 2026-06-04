@@ -25,6 +25,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -98,71 +99,77 @@ private fun DeckDetailContent(
         }
 
         deck != null -> {
-            LazyColumn(
-                modifier = modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFF9F9FF)),
-                contentPadding = PaddingValues(20.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                item {
+            Scaffold(
+                modifier = modifier,
+                containerColor = Color(0xFFF9F9FF),
+                topBar = {
                     TopBar(
-                        mainTitle = "MINLISH",
+                        mainTitle = "MinLish",
                         subTitle = "Deck Detail",
                         showCloseButton = true,
                         onCloseClick = onBackClick
                     )
                 }
+            ) { paddingValues ->
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .background(Color(0xFFF9F9FF)),
+                    contentPadding = PaddingValues(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
 
-                item {
-                    DeckHeader(deck = deck)
-                }
-
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Button(
-                            onClick = onStartLearning,
-                            modifier = Modifier.weight(1f).height(52.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = colorPrimary),
-                            shape = RoundedCornerShape(14.dp)
-                        ) {
-                            Icon(Icons.Default.PlayArrow, contentDescription = null)
-                            Spacer(modifier = Modifier.size(8.dp))
-                            Text("Start Learning")
-                        }
-
-                        OutlinedButton(
-                            onClick = onAddWord,
-                            modifier = Modifier.weight(1f).height(52.dp),
-                            shape = RoundedCornerShape(14.dp)
-                        ) {
-                            Icon(Icons.Default.Add, contentDescription = null)
-                            Spacer(modifier = Modifier.size(8.dp))
-                            Text("Add Word")
-                        }
-                    }
-                }
-
-                item {
-                    Text(
-                        text = "Vocabulary",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF311B92),
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
-
-                if (vocabularies.isEmpty()) {
                     item {
-                        EmptyVocabularyCard()
+                        DeckHeader(deck = deck)
                     }
-                } else {
-                    items(vocabularies, key = { "${it.deckId}_${it.word}" }) { vocabulary ->
-                        VocabularyRow(vocabulary = vocabulary)
+
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Button(
+                                onClick = onStartLearning,
+                                modifier = Modifier.weight(1f).height(52.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = colorPrimary),
+                                shape = RoundedCornerShape(14.dp)
+                            ) {
+                                Icon(Icons.Default.PlayArrow, contentDescription = null)
+                                Spacer(modifier = Modifier.size(8.dp))
+                                Text("Start Learning")
+                            }
+
+                            OutlinedButton(
+                                onClick = onAddWord,
+                                modifier = Modifier.weight(1f).height(52.dp),
+                                shape = RoundedCornerShape(14.dp)
+                            ) {
+                                Icon(Icons.Default.Add, contentDescription = null)
+                                Spacer(modifier = Modifier.size(8.dp))
+                                Text("Add Word")
+                            }
+                        }
+                    }
+
+                    item {
+                        Text(
+                            text = "Vocabulary",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF311B92),
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+
+                    if (vocabularies.isEmpty()) {
+                        item {
+                            EmptyVocabularyCard()
+                        }
+                    } else {
+                        items(vocabularies, key = { "${it.deckId}_${it.word}" }) { vocabulary ->
+                            VocabularyRow(vocabulary = vocabulary)
+                        }
                     }
                 }
             }

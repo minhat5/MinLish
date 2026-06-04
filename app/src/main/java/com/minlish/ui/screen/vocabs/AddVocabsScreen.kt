@@ -88,7 +88,15 @@ fun AddVocabsScreen(
     }
 
     Scaffold(
-        containerColor = Color(0xFFF9F9FF)
+        containerColor = Color(0xFFF9F9FF),
+        topBar = {
+            TopBar(
+                mainTitle = "MinLish",
+                subTitle = "Add Words",
+                showCloseButton = true,
+                onCloseClick = onBackClick
+            )
+        }
     ) { paddingValues ->
         val scrollState = rememberScrollState()
 
@@ -98,12 +106,6 @@ fun AddVocabsScreen(
                 .padding(paddingValues)
                 .verticalScroll(scrollState)
         ) {
-            TopBar(
-                mainTitle = "MINLISH",
-                subTitle = "Add Words",
-                showCloseButton = true,
-                onCloseClick = onBackClick
-            )
             Spacer(modifier = Modifier.height(16.dp))
             FormCard(
                 title = "Manual Entry",

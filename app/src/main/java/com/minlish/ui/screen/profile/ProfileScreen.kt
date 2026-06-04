@@ -81,9 +81,8 @@ fun ProfileScreen(
         modifier = modifier
             .fillMaxSize()
             .background(colorSurface)
-            .safeDrawingPadding()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 24.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 24.dp)
     ) {
         ProfileAvatarCard(
             modifier = Modifier.fillMaxWidth(),
