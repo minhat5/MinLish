@@ -11,6 +11,18 @@ import com.minlish.domain.model.UserProgress
 import com.minlish.domain.model.Vocabulary
 import kotlinx.coroutines.tasks.await
 
+data class VocabularyImportItem(
+    val word: String,
+    val phonetic: String,
+    val meaning: String,
+    val example: String
+)
+
+data class VocabularyImportResult(
+    val addedCount: Int,
+    val skippedDuplicateCount: Int
+)
+
 class FirebaseDeckService(
     private val firestore: FirebaseFirestore
 ) {
@@ -71,6 +83,11 @@ class FirebaseDeckService(
         meaning: String,
         example: String
     ) {
+        val normalizedWord = word.normalizedWordKey()
+        if (getExistingWordKeys(deckId).contains(normalizedWord)) {
+            throw IllegalArgumentException("This word already exists in this deck.")
+        }
+
         val vocabularyRef = firestore.collection(FirebaseCollections.VOCABULARIES).document()
         val deckRef = firestore.collection(FirebaseCollections.DECKS).document(deckId)
         val now = System.currentTimeMillis()
@@ -97,6 +114,77 @@ class FirebaseDeckService(
             )
         )
         batch.commit().await()
+    }
+
+    suspend fun createVocabularies(
+        ownerId: String,
+        deckId: String,
+        vocabularies: List<VocabularyImportItem>
+    ): VocabularyImportResult {
+        if (vocabularies.isEmpty()) {
+            return VocabularyImportResult(addedCount = 0, skippedDuplicateCount = 0)
+        }
+
+        val existingWordKeys = getExistingWordKeys(deckId).toMutableSet()
+        val uniqueVocabularies = mutableListOf<VocabularyImportItem>()
+        var duplicateCount = 0
+
+        vocabularies.forEach { vocabulary ->
+            val wordKey = vocabulary.word.normalizedWordKey()
+            if (wordKey.isBlank() || wordKey in existingWordKeys) {
+                duplicateCount++
+            } else {
+                existingWordKeys.add(wordKey)
+                uniqueVocabularies.add(vocabulary)
+            }
+        }
+
+        if (uniqueVocabularies.isEmpty()) {
+            return VocabularyImportResult(addedCount = 0, skippedDuplicateCount = duplicateCount)
+        }
+
+        val deckRef = firestore.collection(FirebaseCollections.DECKS).document(deckId)
+        val now = System.currentTimeMillis()
+        val chunks = uniqueVocabularies.chunked(MAX_BATCH_VOCABULARIES)
+
+        chunks.forEachIndexed { index, chunk ->
+            val batch = firestore.batch()
+
+            chunk.forEach { vocabulary ->
+                val vocabularyRef = firestore.collection(FirebaseCollections.VOCABULARIES).document()
+                batch.set(
+                    vocabularyRef,
+                    mapOf(
+                        "id" to vocabularyRef.id,
+                        "ownerId" to ownerId,
+                        "deckId" to deckId,
+                        "word" to vocabulary.word,
+                        "phonetic" to vocabulary.phonetic,
+                        "meaning" to vocabulary.meaning,
+                        "example" to vocabulary.example,
+                        "createdAt" to now,
+                        "updatedAt" to now
+                    )
+                )
+            }
+
+            if (index == chunks.lastIndex) {
+                batch.update(
+                    deckRef,
+                    mapOf(
+                        "totalWordCount" to FieldValue.increment(uniqueVocabularies.size.toLong()),
+                        "updatedAt" to now
+                    )
+                )
+            }
+
+            batch.commit().await()
+        }
+
+        return VocabularyImportResult(
+            addedCount = uniqueVocabularies.size,
+            skippedDuplicateCount = duplicateCount
+        )
     }
 
     suspend fun getVocabularyForDeck(deckId: String): List<Vocabulary> {
@@ -172,5 +260,23 @@ class FirebaseDeckService(
 
     private fun Vocabulary.toVocabId(deckId: String): String {
         return "${deckId}_${word.trim().lowercase()}"
+    }
+
+    private suspend fun getExistingWordKeys(deckId: String): Set<String> {
+        return firestore.collection(FirebaseCollections.VOCABULARIES)
+            .whereEqualTo("deckId", deckId)
+            .get()
+            .await()
+            .documents
+            .mapNotNull { document -> document.getString("word")?.normalizedWordKey() }
+            .toSet()
+    }
+
+    private fun String.normalizedWordKey(): String {
+        return trim().lowercase()
+    }
+
+    private companion object {
+        const val MAX_BATCH_VOCABULARIES = 450
     }
 }
