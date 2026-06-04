@@ -1,6 +1,7 @@
 package com.minlish.ui.screen.analytics
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -22,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
@@ -71,14 +74,45 @@ fun AnalyticsScreen(
             )
         }
     ) { paddingValues ->
-        AnalyticsContent(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            uiState = uiState,
-            resetProgressTabKey = resetProgressTabKey,
-            onStartReviewSession = onStartReviewSession
-        )
+        when {
+            uiState.isLoading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .background(colorSurface)
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+            }
+
+            uiState.errorMessage != null -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .background(colorSurface)
+                        .padding(24.dp)
+                ) {
+                    Text(
+                        text = uiState.errorMessage ?: "Failed to load analytics",
+                        color = colorOnSurfaceVariant,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
+
+            else -> {
+                AnalyticsContent(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    uiState = uiState,
+                    resetProgressTabKey = resetProgressTabKey,
+                    onStartReviewSession = onStartReviewSession
+                )
+            }
+        }
     }
 }
 
