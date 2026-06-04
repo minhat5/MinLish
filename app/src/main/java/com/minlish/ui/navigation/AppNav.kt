@@ -361,7 +361,10 @@ private fun MainScaffold(
                 onProfileClick = {
                     onTabSelect(Routes.PROFILE)
                 },
-                bottomPadding = if (currentRoute == Routes.DECKS) 4.dp else 16.dp
+                bottomPadding = when (currentRoute) {
+                    Routes.HOME, Routes.DECKS, Routes.PROFILE -> 4.dp
+                    else -> 16.dp
+                }
             )
         },
         bottomBar = {

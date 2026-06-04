@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -72,57 +73,66 @@ fun AddDeckScreen(
         }
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-            .padding(vertical = 16.dp)
-    ) {
-        TopBar(
-            mainTitle = "MINLISH",
-            subTitle = "Create Deck",
-            showCloseButton = true,
-            onCloseClick = onBackClick
-        )
-        FormCard(
-            title = "Create New Deck",
-            icon = Icons.Default.Edit
+    Scaffold(
+        modifier = modifier,
+        containerColor = Color(0xFFF9F9FF),
+        topBar = {
+            TopBar(
+                mainTitle = "MinLish",
+                subTitle = "Create Deck",
+                showCloseButton = true,
+                onCloseClick = onBackClick,
+                bottomPadding = 4.dp
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(scrollState)
+                .padding(top = 8.dp, bottom = 16.dp)
         ) {
-            TextFieldVocabs(
-                label = "Deck Title",
-                placeholder = "e.g. Business",
-                value = uiState.deckTitle,
-                onValueChange = viewModel::onDeckTitleChange
+            FormCard(
+                title = "Create New Deck",
+                icon = Icons.Default.Edit
+            ) {
+                TextFieldVocabs(
+                    label = "Deck Title",
+                    placeholder = "e.g. Business",
+                    value = uiState.deckTitle,
+                    onValueChange = viewModel::onDeckTitleChange
+                )
+                TextFieldVocabs(
+                    label = "Description",
+                    placeholder = "Briefly describe what's in this deck...",
+                    value = uiState.deckDescription,
+                    onValueChange = viewModel::onDeckDescriptionChange
+                )
+            }
+            Spacer(modifier = Modifier.height(32.dp))
+            IconSelectionSection(
+                selectedIconKey = uiState.selectedIconKey,
+                onIconSelected = viewModel::onDeckIconSelected
             )
-            TextFieldVocabs(
-                label = "Description",
-                placeholder = "Briefly describe what's in this deck...",
-                value = uiState.deckDescription,
-                onValueChange = viewModel::onDeckDescriptionChange
+            ThemeColorSection(
+                selectedColorHex = uiState.selectedThemeColorHex,
+                onColorSelected = viewModel::onThemeColorSelected
+            )
+            uiState.errorMessage?.let { message ->
+                Text(
+                    text = message,
+                    color = Color(0xFFC62828),
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(horizontal = 24.dp)
+                )
+            }
+            AddToDeckButton(
+                text = if (uiState.isSubmitting) "Creating..." else "Create Deck",
+                enabled = !uiState.isSubmitting,
+                onClick = viewModel::createDeck
             )
         }
-        Spacer(modifier = Modifier.height(32.dp))
-        IconSelectionSection(
-            selectedIconKey = uiState.selectedIconKey,
-            onIconSelected = viewModel::onDeckIconSelected
-        )
-        ThemeColorSection(
-            selectedColorHex = uiState.selectedThemeColorHex,
-            onColorSelected = viewModel::onThemeColorSelected
-        )
-        uiState.errorMessage?.let { message ->
-            Text(
-                text = message,
-                color = Color(0xFFC62828),
-                fontSize = 14.sp,
-                modifier = Modifier.padding(horizontal = 24.dp)
-            )
-        }
-        AddToDeckButton(
-            text = if (uiState.isSubmitting) "Creating..." else "Create Deck",
-            enabled = !uiState.isSubmitting,
-            onClick = viewModel::createDeck
-        )
     }
 }
 

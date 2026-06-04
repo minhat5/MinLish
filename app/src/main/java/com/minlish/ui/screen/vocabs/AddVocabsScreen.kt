@@ -1,5 +1,9 @@
 package com.minlish.ui.screen.vocabs
 
+import android.net.Uri
+import android.provider.OpenableColumns
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +25,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.TableChart
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +45,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -58,7 +68,17 @@ fun AddVocabsScreen(
         factory = AddVocabularyViewModelFactory(deckId)
     )
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+    val csvLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            val fileName = context.displayNameFor(uri)
+            val csvText = context.readTextFrom(uri)
+            viewModel.onCsvTextSelected(fileName, csvText)
+        }
+    }
 
     LaunchedEffect(uiState.createSuccess) {
         if (uiState.createSuccess) {
@@ -68,7 +88,15 @@ fun AddVocabsScreen(
     }
 
     Scaffold(
-        containerColor = Color(0xFFF9F9FF)
+        containerColor = Color(0xFFF9F9FF),
+        topBar = {
+            TopBar(
+                mainTitle = "MinLish",
+                subTitle = "Add Words",
+                showCloseButton = true,
+                onCloseClick = onBackClick
+            )
+        }
     ) { paddingValues ->
         val scrollState = rememberScrollState()
 
@@ -78,12 +106,6 @@ fun AddVocabsScreen(
                 .padding(paddingValues)
                 .verticalScroll(scrollState)
         ) {
-            TopBar(
-                mainTitle = "MINLISH",
-                subTitle = "Add Words",
-                showCloseButton = true,
-                onCloseClick = onBackClick
-            )
             Spacer(modifier = Modifier.height(16.dp))
             FormCard(
                 title = "Manual Entry",
@@ -114,11 +136,39 @@ fun AddVocabsScreen(
                     onValueChange = viewModel::onExampleChange
                 )
             }
-            QuickImportSection()
+            QuickImportSection(
+                selectedFileName = uiState.selectedCsvFileName,
+                onBrowseCsvClick = {
+                    csvLauncher.launch(
+                        arrayOf(
+                            "text/*",
+                            "text/csv",
+                            "application/csv",
+                            "application/vnd.ms-excel"
+                        )
+                    )
+                }
+            )
+            CsvImportPreviewSection(
+                fileName = uiState.selectedCsvFileName,
+                importedWords = uiState.importedWords,
+                importErrors = uiState.importErrors,
+                isImporting = uiState.isImporting,
+                onImportClick = viewModel::importCsvWords,
+                onClearClick = viewModel::clearCsvImport
+            )
             uiState.errorMessage?.let { message ->
                 Text(
                     text = message,
                     color = Color(0xFFC62828),
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+                )
+            }
+            uiState.infoMessage?.let { message ->
+                Text(
+                    text = message,
+                    color = Color(0xFF2E7D32),
                     fontSize = 14.sp,
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
                 )
@@ -133,7 +183,10 @@ fun AddVocabsScreen(
 }
 
 @Composable
-fun QuickImportSection() {
+fun QuickImportSection(
+    selectedFileName: String = "",
+    onBrowseCsvClick: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .padding(horizontal = 24.dp)
@@ -173,7 +226,7 @@ fun QuickImportSection() {
                 .padding(4.dp)
                 .background(Color.White, RoundedCornerShape(16.dp))
                 .clip(RoundedCornerShape(16.dp))
-                .clickable { }
+                .clickable { onBrowseCsvClick() }
                 .padding(vertical = 32.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -199,11 +252,137 @@ fun QuickImportSection() {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Drop your CSV or Excel here", fontWeight = FontWeight.Bold, color = Color(0xFF4A6572))
-                Text("or click to browse your files", fontSize = 12.sp, color = Color.Gray)
+                Text("Choose a CSV file", fontWeight = FontWeight.Bold, color = Color(0xFF4A6572))
+                Text(
+                    selectedFileName.ifBlank { "word, phonetic, meaning, example" },
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
             }
         }
     }
+}
+
+@Composable
+private fun CsvImportPreviewSection(
+    fileName: String,
+    importedWords: List<com.minlish.ui.common.viewmodel.ImportedVocabularyWord>,
+    importErrors: List<String>,
+    isImporting: Boolean,
+    onImportClick: () -> Unit,
+    onClearClick: () -> Unit
+) {
+    if (fileName.isBlank() && importedWords.isEmpty() && importErrors.isEmpty()) {
+        return
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "CSV Preview",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF311B92)
+            )
+            if (fileName.isNotBlank()) {
+                Text(
+                    text = fileName,
+                    fontSize = 13.sp,
+                    color = Color(0xFF757575),
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+            Text(
+                text = "${importedWords.size} valid words",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF4A6572),
+                modifier = Modifier.padding(top = 12.dp)
+            )
+
+            importedWords.take(5).forEach { word ->
+                Text(
+                    text = "${word.rowNumber}. ${word.word} - ${word.meaning}",
+                    fontSize = 13.sp,
+                    color = Color(0xFF4A6572),
+                    modifier = Modifier.padding(top = 6.dp)
+                )
+            }
+
+            if (importedWords.size > 5) {
+                Text(
+                    text = "...and ${importedWords.size - 5} more",
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 6.dp)
+                )
+            }
+
+            importErrors.take(3).forEach { error ->
+                Text(
+                    text = error,
+                    fontSize = 12.sp,
+                    color = Color(0xFFC62828),
+                    modifier = Modifier.padding(top = 6.dp)
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Button(
+                    onClick = onImportClick,
+                    enabled = importedWords.isNotEmpty() && !isImporting,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6C63FF)),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Text(if (isImporting) "Importing..." else "Import CSV")
+                }
+                OutlinedButton(
+                    onClick = onClearClick,
+                    enabled = !isImporting,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Text("Clear")
+                }
+            }
+        }
+    }
+}
+
+private fun android.content.Context.displayNameFor(uri: Uri): String {
+    return contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+        val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        if (nameIndex >= 0 && cursor.moveToFirst()) {
+            cursor.getString(nameIndex)
+        } else {
+            uri.lastPathSegment
+        }
+    } ?: uri.lastPathSegment ?: "selected.csv"
+}
+
+private fun android.content.Context.readTextFrom(uri: Uri): String {
+    return runCatching {
+        contentResolver.openInputStream(uri)
+            ?.bufferedReader()
+            ?.use { it.readText() }
+            .orEmpty()
+    }.getOrDefault("")
 }
 
 @Preview(showBackground = true)

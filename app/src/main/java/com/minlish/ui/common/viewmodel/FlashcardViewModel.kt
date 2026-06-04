@@ -40,6 +40,7 @@ class FlashcardViewModel(
     val uiState: StateFlow<FlashcardUiState> = _uiState.asStateFlow()
 
     private var baseProgressMap: Map<String, UserProgress> = emptyMap()
+    private var sessionVocabularies: List<Vocabulary> = emptyList()
     private val pendingProgressMap = linkedMapOf<String, UserProgress>()
     private var totalVocabularyCount: Int = 0
     private var initialQueueSize: Int = 0
@@ -67,6 +68,7 @@ class FlashcardViewModel(
                 val queue = buildDueQueue(vocabularies, progressMap)
 
                 baseProgressMap = progressMap
+                sessionVocabularies = vocabularies
                 totalVocabularyCount = vocabularies.size
                 initialQueueSize = queue.size
                 easySelectedCount = 0
@@ -140,9 +142,7 @@ class FlashcardViewModel(
             _uiState.update { it.copy(isSubmitting = true, errorMessage = null) }
             try {
                 val mergedProgress = baseProgressMap + pendingProgressMap
-                val learnedWordCount = mergedProgress.values.count { progress ->
-                    progress.deckId == deckId && progress.repetition > 0
-                }
+                val learnedWordCount = calculateLearnedWordCount(sessionVocabularies, mergedProgress)
                 val deckStatus = when {
                     totalVocabularyCount > 0 && learnedWordCount >= totalVocabularyCount -> DeckStatus.MASTERED.name
                     learnedWordCount > 0 -> DeckStatus.LEARNING.name
@@ -198,6 +198,18 @@ class FlashcardViewModel(
                 progress == null || progress.nextReviewDate <= now
             }
             .shuffled()
+    }
+
+    private fun calculateLearnedWordCount(
+        vocabularies: List<Vocabulary>,
+        progressMap: Map<String, UserProgress>
+    ): Int {
+        val now = System.currentTimeMillis()
+        val dueOrNewCount = vocabularies.count { vocabulary ->
+            val progress = progressMap[vocabulary.toVocabId()]
+            progress == null || progress.nextReviewDate <= now
+        }
+        return (vocabularies.size - dueOrNewCount).coerceAtLeast(0)
     }
 
     private fun Vocabulary.toVocabId(): String {
