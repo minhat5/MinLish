@@ -44,9 +44,9 @@ fun DailyReviewSummary(
         CelebrationHeader()
         Spacer(modifier = Modifier.height(30.dp))
         StatsBentoGrid(wordsCount, accuracy)
-        Spacer(modifier = Modifier.height(30.dp))
-        ProgressCard(title = title, trailingText = trailingText, progress = progress/100f)
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(150.dp))
+//        ProgressCard(title = title, trailingText = trailingText, progress = progress/100f)
+//        Spacer(modifier = Modifier.height(30.dp))
         PrimaryButton(primaryGradient, text, onClick = onContinueClick)
     }
 }
