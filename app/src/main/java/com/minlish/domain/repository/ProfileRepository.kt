@@ -7,4 +7,5 @@ interface ProfileRepository {
     suspend fun getProgressSnapshot(userId: String): ProgressSnapshot?
     suspend fun getDecksForUser(userId: String): List<Deck>
     suspend fun getReviewCounts(userId: String): Pair<Int, Int>
+    suspend fun resetStreak(userId: String)
 }

@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minlish.ui.theme.colorOnSurfaceVariant
 
-private val consistencyPurple = Color(0xFF6C63FF)
+private val consistencyStudied = Color(0xFF2196F3)
 private val consistencyMuted = Color(0xFFE8E8F0)
 private val consistencyToday = Color(0xFF34C759)
 private val consistencyText = Color(0xFF494551)
@@ -214,8 +214,8 @@ private fun CalendarDayCell(
 }
 
 private fun WeeklyConsistencyChartEntry.chartColor() = when {
+    hasStudied -> consistencyStudied
     isToday -> consistencyToday
-    hasStudied -> consistencyPurple
     else -> consistencyMuted
 }
 
@@ -225,8 +225,8 @@ private fun calendarCellColor(
     isToday: Boolean
 ) = when {
     day == null -> Color.Transparent
+    isStudied -> consistencyStudied
     isToday -> consistencyToday
-    isStudied -> consistencyPurple
     else -> consistencyMuted
 }
 

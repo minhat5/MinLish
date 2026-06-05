@@ -23,7 +23,6 @@ import com.minlish.domain.usecase.GetDashboardMetricsUseCase
 import com.minlish.domain.usecase.IsLoggedInUseCase
 import com.minlish.domain.usecase.LoginUseCase
 import com.minlish.domain.usecase.LogoutUseCase
-import com.minlish.domain.usecase.ObserveAuthStateUseCase
 import com.minlish.domain.usecase.RegisterUseCase
 import com.minlish.domain.usecase.ResetPasswordUseCase
 import com.minlish.domain.usecase.UpdateUserProfileUseCase
@@ -73,9 +72,8 @@ object AppContainer {
     val registerUseCase: RegisterUseCase by lazy { RegisterUseCase(authRepository) }
     val loginUseCase: LoginUseCase by lazy { LoginUseCase(authRepository) }
     val logoutUseCase: LogoutUseCase by lazy { LogoutUseCase(authRepository) }
-    val getCurrentUserUseCase: GetCurrentUserUseCase by lazy { GetCurrentUserUseCase(authRepository) }
+    val getCurrentUserUseCase: GetCurrentUserUseCase by lazy { GetCurrentUserUseCase(authRepository, profileRepository) }
     val isLoggedInUseCase: IsLoggedInUseCase by lazy { IsLoggedInUseCase(authRepository) }
-    val observeAuthStateUseCase: ObserveAuthStateUseCase by lazy { ObserveAuthStateUseCase(authRepository) }
     val resetPasswordUseCase: ResetPasswordUseCase by lazy { ResetPasswordUseCase(authRepository) }
     val updateUserProfileUseCase: UpdateUserProfileUseCase by lazy { UpdateUserProfileUseCase(authRepository) }
     val getProfileStatsUseCase: GetProfileStatsUseCase by lazy { GetProfileStatsUseCase(profileRepository) }

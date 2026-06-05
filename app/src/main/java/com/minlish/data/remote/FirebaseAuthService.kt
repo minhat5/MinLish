@@ -187,14 +187,6 @@ class FirebaseAuthService(
     /**
      * Observe authentication state changes
      */
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun observeAuthState(): Flow<String?> = callbackFlow {
-        val listener = FirebaseAuth.AuthStateListener { auth ->
-            trySend(auth.currentUser?.uid)
-        }
-        auth.addAuthStateListener(listener)
-        awaitClose { auth.removeAuthStateListener(listener) }
-    }
 
     /**
      * Reset password for user

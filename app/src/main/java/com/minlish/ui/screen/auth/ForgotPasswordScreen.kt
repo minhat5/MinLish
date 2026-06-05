@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -47,7 +48,9 @@ fun ForgotPasswordScreen(
     Surface(
         color = Color(0xFFF7EEFE),
         modifier = Modifier
-            .padding(24.dp)
+            .fillMaxSize()
+            .safeDrawingPadding()
+            .padding(horizontal = 32.dp, vertical = 56.dp)
             .shadow(6.dp, RoundedCornerShape(16.dp))
     ) {
         Column(

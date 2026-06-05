@@ -22,4 +22,8 @@ class ProfileRepositoryImpl(
         val reviewStats = firebaseProfileService.getReviewStats(userId)
         return reviewStats.totalReviews to reviewStats.perfectScores
     }
+
+    override suspend fun resetStreak(userId: String) {
+        firebaseProfileService.resetStreak(userId)
+    }
 }
