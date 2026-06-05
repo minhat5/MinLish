@@ -1,6 +1,7 @@
 package com.minlish.data.remote
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.minlish.core.constant.DeckStatus
 import com.minlish.core.constant.SrsRating
 import com.minlish.data.dto.DeckDto
@@ -75,6 +76,17 @@ class FirebaseProfileService(
             totalReviews = reviewLogs.size(),
             perfectScores = perfectScores
         )
+    }
+
+    suspend fun resetStreak(userId: String) {
+        val batch = firestore.batch()
+        val userRef = firestore.collection(FirebaseCollections.USERS).document(userId)
+        val progressRef = firestore.collection(FirebaseCollections.PROGRESS).document(userId)
+
+        batch.update(userRef, "streak", 0)
+        batch.set(progressRef, mapOf("streakDays" to 0), SetOptions.merge())
+
+        batch.commit().await()
     }
 }
 

@@ -72,7 +72,7 @@ object AppContainer {
     val registerUseCase: RegisterUseCase by lazy { RegisterUseCase(authRepository) }
     val loginUseCase: LoginUseCase by lazy { LoginUseCase(authRepository) }
     val logoutUseCase: LogoutUseCase by lazy { LogoutUseCase(authRepository) }
-    val getCurrentUserUseCase: GetCurrentUserUseCase by lazy { GetCurrentUserUseCase(authRepository) }
+    val getCurrentUserUseCase: GetCurrentUserUseCase by lazy { GetCurrentUserUseCase(authRepository, profileRepository) }
     val isLoggedInUseCase: IsLoggedInUseCase by lazy { IsLoggedInUseCase(authRepository) }
     val resetPasswordUseCase: ResetPasswordUseCase by lazy { ResetPasswordUseCase(authRepository) }
     val updateUserProfileUseCase: UpdateUserProfileUseCase by lazy { UpdateUserProfileUseCase(authRepository) }
