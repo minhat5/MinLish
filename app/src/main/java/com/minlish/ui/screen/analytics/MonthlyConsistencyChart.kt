@@ -42,7 +42,7 @@ import com.minlish.ui.theme.colorPrimary
 import com.minlish.ui.theme.colorSurface
 import java.util.Calendar
 
-private val chartPurple = Color(0xFF6C63FF)
+private val chartStudied = Color(0xFF2196F3)
 private val chartMuted = Color(0xFFE8E8F0)
 private val chartToday = Color(0xFF34C759)
 
@@ -225,7 +225,7 @@ private fun ChartLegend() {
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        LegendItem(color = chartPurple, text = "Studied")
+        LegendItem(color = chartStudied, text = "Studied")
         LegendItem(color = chartMuted, text = "No Study")
         LegendItem(color = chartToday, text = "Today")
     }
