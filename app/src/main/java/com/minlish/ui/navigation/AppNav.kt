@@ -254,7 +254,6 @@ fun AppNavHost() {
                             inclusive = true
                         }
                         launchSingleTop = true
-                        //restoreState = true
                     }
                 },
                 onNavigateRegister = { navController.navigate(Routes.REGISTER) },

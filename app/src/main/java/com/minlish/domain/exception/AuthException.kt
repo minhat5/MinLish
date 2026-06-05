@@ -11,7 +11,6 @@ sealed class AuthException(message: String) : Exception(message) {
     data class WeakPasswordException(val reason: String) : AuthException("Weak password: $reason")
     data class EmailAlreadyInUseException(val email: String) : AuthException("Email already in use: $email")
     data class EmailNotRegisteredException(val email: String) : AuthException("Email is not registered: $email")
-    class UserNotAuthenticatedException() : AuthException("User is not authenticated")
     data class ResetPasswordFailedException(val error: String) : AuthException("Reset password failed: $error")
 }
 

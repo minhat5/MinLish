@@ -39,11 +39,6 @@ interface AuthRepository {
     fun isLoggedIn(): Boolean
 
     /**
-     * Observe authentication state
-     */
-    fun observeAuthState(): Flow<String?>
-
-    /**
      * Reset password
      */
     suspend fun resetPassword(email: String)

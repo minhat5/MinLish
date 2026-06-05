@@ -43,10 +43,6 @@ class AuthRepositoryImpl(
         return firebaseAuthService.isLoggedIn()
     }
 
-    override fun observeAuthState(): Flow<String?> {
-        return firebaseAuthService.observeAuthState()
-    }
-
     override suspend fun resetPassword(email: String) {
         firebaseAuthService.resetPassword(email)
     }

@@ -29,7 +29,6 @@ fun AuthHeader(mainText: String, subText: String) {
             contentDescription = "App Logo",
             modifier = Modifier
                 .height(100.dp)
-                .align(Alignment.CenterHorizontally)
                 .padding(bottom = 24.dp)
         )
         Text(
