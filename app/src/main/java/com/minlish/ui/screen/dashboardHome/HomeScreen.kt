@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.minlish.ui.common.component.ProgressCard
 import com.minlish.ui.common.viewmodel.HomeViewModel
 import com.minlish.ui.common.viewmodel.HomeViewModelFactory
-import com.minlish.ui.theme.*
 
 @Composable
 fun HomeScreen(

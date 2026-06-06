@@ -2,8 +2,9 @@ package com.minlish.domain.usecase
 
 import com.minlish.domain.model.ProgressSnapshot
 import com.minlish.domain.repository.DashboardRepository
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 data class DashboardMetrics(
     val wordsLearned: Int = 0,
@@ -41,7 +42,7 @@ class GetDashboardMetricsUseCase(
                 currentDeckSubtitle = currentDeck?.title ?: "Common Verbs Deck",
                 deckProgress = deckProgress
             )
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             DashboardMetrics()
         }
     }
@@ -52,9 +53,11 @@ class GetDashboardMetricsUseCase(
         }
 
         // Get last 7 days
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val lastSevenDays = (0..6).mapNotNull { daysAgo ->
-            val date = LocalDate.now().minusDays(daysAgo.toLong())
-                .format(DateTimeFormatter.ISO_DATE)
+            val calendar = Calendar.getInstance()
+            calendar.add(Calendar.DAY_OF_YEAR, -daysAgo)
+            val date = dateFormat.format(calendar.time)
             progressSnapshot.dailyActivities.find { it.date == date }
         }
 
